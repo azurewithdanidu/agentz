@@ -13,3 +13,4 @@ This is the single source for AVM rules. Steps link here and do not repeat the r
 > **To confirm with the destination organisation:** whether a private registry mirror of AVM is required, and the approved version policy.
 
 **Authoritative source:** the AVM module index at https://aka.ms/avm.
+- Prefer AVM modules over raw resources.

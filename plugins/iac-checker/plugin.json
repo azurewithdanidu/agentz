@@ -1,0 +1,12 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "iac-checker",
+  "version": "0.1.0",
+  "description": "Checks Bicep templates against infrastructure best practices",
+  "author": {
+    "name": "Danidu Weerasinghe",
+    "email": "danidu@dckloud.com"
+  },
+  "license": "MIT",
+  "keywords": []
+}

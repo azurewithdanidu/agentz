@@ -17,6 +17,12 @@
       "source": "./plugins/bicep-avm-review",
       "description": "Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report.",
       "category": "development"
+    },
+    {
+      "name": "iac-checker",
+      "source": "./plugins/iac-checker",
+      "description": "Checks Bicep templates against infrastructure best practices",
+      "category": "development"
     }
   ],
   "renames": {
