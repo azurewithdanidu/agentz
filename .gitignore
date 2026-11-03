@@ -1,3 +1,8 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+# Local working notes (not published)
+docs/research/platform-claims-validation.md
+docs/research/gaps-vs-original-plan.md
+docs/research/presentation-agenda.md
