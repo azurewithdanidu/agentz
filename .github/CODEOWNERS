@@ -1,0 +1,11 @@
+# The central team owns the marketplace plumbing.
+*                              @contoso/platform-engineering
+/.claude-plugin/               @contoso/platform-engineering
+/.cursor-plugin/               @contoso/platform-engineering
+/scripts/                      @contoso/platform-engineering
+/.github/                      @contoso/platform-engineering
+/docs/                         @contoso/platform-engineering
+
+# Each plugin is owned by the team that publishes it.
+/plugins/plugin-creator/ @contoso/platform-engineering
+/plugins/bicep-avm-review/ @contoso/cloud-infra

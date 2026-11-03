@@ -1,0 +1,24 @@
+{
+  "name": "contoso-agent-plugins",
+  "owner": {
+    "name": "Platform Engineering",
+    "email": "platform-engineering@contoso.com"
+  },
+  "metadata": {
+    "description": "Contoso's central marketplace of reviewed agent plugins (skills, agents, commands) for Claude Code, VS Code, Copilot CLI and Cursor."
+  },
+  "plugins": [
+    {
+      "name": "plugin-creator",
+      "source": "plugins/plugin-creator",
+      "description": "Scaffolds a new plugin that meets the marketplace standard: both manifests, a first skill, an evals file and catalog registration.",
+      "category": "productivity"
+    },
+    {
+      "name": "bicep-avm-review",
+      "source": "plugins/bicep-avm-review",
+      "description": "Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report.",
+      "category": "development"
+    }
+  ]
+}

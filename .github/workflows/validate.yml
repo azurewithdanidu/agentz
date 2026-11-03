@@ -1,0 +1,57 @@
+name: marketplace-gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  structure:
+    name: Structure, manifests and standards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # needed for the version-bump and duplicate checks
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Validate (pull request)
+        if: github.event_name == 'pull_request'
+        run: python3 scripts/validate_repo.py --base origin/${{ github.base_ref }}
+
+      - name: Validate (main)
+        if: github.event_name == 'push'
+        run: python3 scripts/validate_repo.py
+
+  claude-validate:
+    name: Claude plugin validator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      # Uses Anthropic's own validator for the marketplace and every plugin.
+      # Pin the CLI version your organisation has approved.
+      - name: claude plugin validate
+        run: npx -y @anthropic-ai/claude-code plugin validate .
+
+  evals:
+    name: Evals
+    runs-on: ubuntu-latest
+    needs: structure
+    steps:
+      - uses: actions/checkout@v4
+      # TODO: run the eval suites for changed plugins once the evals design is final.
+      # The structure job already enforces the minimum of 10 cases per plugin.
+      - run: echo "Eval runner not wired up yet."

@@ -1,0 +1,16 @@
+{
+  "name": "plugin-creator",
+  "description": "Scaffolds a new plugin that meets the marketplace standard: both manifests, a first skill, an evals file and catalog registration.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Platform Engineering",
+    "email": "platform-engineering@contoso.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "scaffold",
+    "plugin",
+    "marketplace",
+    "standards"
+  ]
+}

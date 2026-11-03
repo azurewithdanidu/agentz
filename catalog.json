@@ -1,0 +1,45 @@
+{
+  "marketplace": "contoso-agent-plugins",
+  "plugins": [
+    {
+      "name": "bicep-avm-review",
+      "version": "0.3.0",
+      "description": "Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report.",
+      "category": "development",
+      "owner": "Cloud Infrastructure Team",
+      "skills": [
+        {
+          "name": "bicep-avm-review",
+          "description": "Review Azure Bicep templates and parameter files against Azure Verified Modules (AVM) and organisation IaC conventions, and produce a findings report with evidence. Use when the user asks to \"review my Bicep\", \"check this against AVM\", \"is this template production ready\", \"audit our IaC\", or opens a PR that changes *.bicep or *.bicepparam files. Do not use for Terraform, ARM JSON authoring, or for deploying resources."
+        }
+      ],
+      "agents": [
+        {
+          "name": "iac-reviewer",
+          "description": "Read-only reviewer for infrastructure-as-code pull requests. Use when asked to review a PR or branch that changes Bicep. Delegates the review logic to the bicep-avm-review skill."
+        }
+      ],
+      "commands": []
+    },
+    {
+      "name": "plugin-creator",
+      "version": "1.0.0",
+      "description": "Scaffolds a new plugin that meets the marketplace standard: both manifests, a first skill, an evals file and catalog registration.",
+      "category": "productivity",
+      "owner": "Platform Engineering",
+      "skills": [
+        {
+          "name": "create-plugin",
+          "description": "Scaffold a new plugin for the central marketplace so it meets the marketplace standard from the start. Use when the user says \"create a plugin\", \"new plugin\", \"scaffold a skill for the marketplace\", \"publish my agent to the marketplace\", or wants to start contributing a plugin. Do not use to edit an existing plugin's logic or to install plugins."
+        }
+      ],
+      "agents": [],
+      "commands": [
+        {
+          "name": "new-plugin",
+          "description": "Scaffold a new marketplace plugin that meets the publishing standard"
+        }
+      ]
+    }
+  ]
+}
