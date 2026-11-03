@@ -13,6 +13,8 @@ You are the first reviewer of every plugin submission. Check the pull request ag
 | `plugin-skills.instructions.md` | Skill quality and structure |
 | `plugin-agents.instructions.md` | Agents, commands, hooks, generated files |
 | `plugin-evals.instructions.md` | Eval coverage and quality |
+| `agentz-authoring.instructions.md` | Authoring conventions (also used by HVE Core `hve-builder`) |
+| `agentz-evals.instructions.md` | Eval conventions (also used by HVE Core `vally-tests`) |
 | `gate-changes.instructions.md` | Changes to CI, scripts, CODEOWNERS or these instructions |
 
 ## How to review

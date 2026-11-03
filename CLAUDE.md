@@ -24,16 +24,25 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
 
 - `.claude-plugin/marketplace.json`: the registry (marketplace name `agentz`); `.github/plugin/marketplace.json` and `.cursor-plugin/marketplace.json` are generated copies
 - `plugins/<name>/`: one folder per plugin
-  - `plugin-creator`: scaffolds new plugins (`scripts/scaffold.py`, `/new-plugin`)
+  - `agentz-publisher` (replaces `plugin-creator`, mapped in marketplace `renames`): the four-phase publishing flow. Skills `analyse-request`, `research-catalog`, `build-plugin`, `validate-plugin`; agent `publisher`; commands `/new-plugin`, `/agentz-init`; `scripts/scaffold.py`; `skills/research-catalog/scripts/search_catalog.py`
   - `bicep-avm-review`: reference example of the skill structure
 - `scripts/`: `sync_manifests.py`, `build_catalog.py`, `validate_repo.py`, `marketplace_lib.py` (needs PyYAML)
 - `docs/`: `plugin-standard.md`, `skill-authoring-standard.md`, `consuming-plugins.md`
 - `.github/`: `workflows/validate.yml`, `CODEOWNERS`, `copilot-instructions.md`, `instructions/*.instructions.md` (Copilot PR review rules, split by path), PR template
 
+## Publishing framework (Analyse, Research, Build, Validate)
+
+- Analyse and Research are agentz's own (`agentz-publisher`); Build and Validate use HVE Core (`hve-builder`, `vally-tests`) when installed, with fallbacks when not. The gate never depends on HVE Core.
+- HVE Core integration is by host-extension instructions only: `.github/instructions/agentz-authoring.instructions.md` and `agentz-evals.instructions.md`. Don't copy HVE Core content into the repo.
+- Handoff notes live in `.agentz/<plugin>/` (git-ignored): `intent-brief.md`, `research.md`, `readiness-report.md`.
+- Contributor setup: `scripts/init.sh` / `scripts/init.ps1` (`--skip-hve`, `--hve-ref`, `--dry-run`), `.vscode/extensions.json` recommends the HVE Core extension (`ise-hve-essentials.hve-core`).
+
 ## The gate
 
-- CI (`validate_repo.py`) blocks on: Agent Plugins manifest and `mcp.json` schema, agent tool mapping, naming, version bump, at least 10 evals incl. trigger cases, broken links, secrets, CODEOWNERS, stale generated files.
-- CI (`claude plugin validate .`) runs Anthropic's validator.
+- CI (`validate_repo.py`) blocks on: Agent Plugins manifest and `mcp.json` schema, agent tool mapping, naming, version bump, Vally eval minimums (below), broken links, secrets, CODEOWNERS, stale generated files.
+- CI (`claude plugin validate .`, pinned 2.1.317) runs Anthropic's validator.
+- CI `eval-lint` runs `vally lint plugins --eval-spec plugins --strict` (Vally 0.20.0, no model calls). CI `evals` runs `vally eval --require-pass` for changed plugins when the `COPILOT_GITHUB_TOKEN` secret exists, otherwise warns.
+- Eval minimums: 10+ stimuli, 3+ `skill-invocation` required (every skill covered), 2+ disallowed; fixtures must exist.
 - Duplicate check: overlap coefficient on skill/agent names + descriptions vs base `catalog.json`; warns at >= 0.6. Calibrated on only a few skills; retune as the catalog grows.
 - Copilot code review checks every rule (submission, manifest, skills, agents, evals, gate changes) via `.github/copilot-instructions.md` and path-specific files in `.github/instructions/`. CI stays authoritative and blocks merges; Copilot explains problems early. Copilot reads instructions from the PR branch, so `gate-changes.instructions.md` flags any PR that weakens the gate.
 
@@ -41,7 +50,8 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
 
 - `chore/rename-to-agentz`: Contoso placeholders replaced with agentz values. Merge first.
 - `feat/agent-plugins-spec`: converts every plugin to Agent Plugins 1.0 with generated Claude/Cursor files. Merge second.
-- `demo/iac-checker`: deliberately failing PR for the talk (1 eval, no version bump, duplicate of `bicep-avm-review`), rebuilt on the Agent Plugins layout. Keep open.
+- `feat/hve-publisher`: agentz-publisher (Analyse, Research, Build, Validate), HVE Core host-extension instructions, Vally evals and CI, contributor init. Merge third.
+- `demo/iac-checker`: deliberately failing PR for the talk (too few evals, no version bump, duplicate of `bicep-avm-review`), rebuilt on top of `feat/hve-publisher`. Keep open.
 - `feature/iac-checker`: stale local branch from the first skeleton (Contoso names). Safe to delete.
 
 ## Verified platform facts (Nov 2026; recheck before slides)
@@ -56,7 +66,8 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
 
 ## Open work
 
-1. Evals design: `evals/evals.yaml` format is a placeholder; the CI `evals` job is a stub. Only the count is enforced.
+1. Evals are Vally specs (`plugins/<name>/evals/eval.yaml`) and lint cleanly, but haven't been run against a real model yet. Add the `COPILOT_GITHUB_TOKEN` secret and run them; tune expectations that fail for the wrong reason.
+1a. Test the HVE Core integration in VS Code: does `hve-builder` stay in the plugin layout, and does `vally-tests` write to the plugin's `eval.yaml`, as the agentz instructions ask?
 2. Enable Copilot code review automatically on PRs (repo rulesets) and confirm Actions run.
 3. Test installs from each client before the talk, especially whether Cursor shows agents/commands.
 4. Optional: a GitHub org to demo real team ownership in CODEOWNERS; a private copy to demo Claude org sync.

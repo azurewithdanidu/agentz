@@ -12,13 +12,13 @@ Apply to every pull request that adds or changes a plugin.
 - If an existing skill does most of the same job, comment with its name and recommend extending it instead.
 - If two skills would trigger on the same prompts, name the prompts that collide.
 - CI posts a "possible duplicate" warning based on description similarity. Treat it as a lead and explain whether the overlap is real.
-- If you can't see enough of the catalog to judge, ask the author to confirm the reuse check in the PR description.
+- If you can't see enough of the catalog to judge, ask the author to confirm the reuse check in the PR description, or to attach the `research.md` verdict from the `agentz-publisher` flow.
 
 ## 2. Layout
 
 - The plugin folder is `plugins/<name>/`, and `<name>` is lowercase letters, digits and hyphens, at most 64 characters.
 - The folder name, `plugin.json` name and marketplace entry name are identical.
-- Required: `plugin.json`, at least one `skills/<skill>/SKILL.md`, `evals/evals.yaml`, `README.md`.
+- Required: `plugin.json`, at least one `skills/<skill>/SKILL.md`, `evals/eval.yaml` (Vally format), `README.md`.
 - Not allowed: a top-level `bin/` folder (Claude org sync rejects the plugin; use `scripts/`), `hooks.json` at the plugin root, a legacy `.plugin/` folder.
 
 ## 3. Ownership

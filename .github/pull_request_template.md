@@ -4,14 +4,15 @@
 
 ## Reuse check
 
-- [ ] I searched `catalog.json` and nothing existing does this job, **or** I am extending the existing plugin: `<name>`
+- [ ] I searched `catalog.json` (or ran `research-catalog`) and nothing existing does this job, **or** I am extending the existing plugin: `<name>`
+- [ ] Research verdict and readiness report (from `agentz-publisher`), if used: <!-- paste the summary -->
 
 ## Publishing checklist
 
 - [ ] Ran `python3 scripts/sync_manifests.py` and `python3 scripts/build_catalog.py`
 - [ ] `python3 scripts/validate_repo.py` passes locally
 - [ ] Version bumped in the plugin's root `plugin.json` (patch, minor or major)
-- [ ] At least 10 evals, including trigger cases that should and should not fire
-- [ ] Evals run locally and pass
+- [ ] Vally evals in `evals/eval.yaml`: at least 10 stimuli, every skill has a should-trigger case, 2+ should-not-trigger cases
+- [ ] `vally lint` passes and `vally eval` passes locally (no `advisory: true` tags left)
 - [ ] Plugin README states owner, status, platforms and usage
 - [ ] Tested in VS Code, plus any other client you target: <!-- Copilot CLI / Claude Code / Cursor -->

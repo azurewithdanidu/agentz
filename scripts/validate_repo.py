@@ -251,24 +251,66 @@ def check_skill(r: Reporter, sdir: Path) -> None:
 
 
 def check_evals(r: Reporter, pdir: Path) -> None:
-    evals = pdir / "evals" / "evals.yaml"
-    if not evals.exists():
-        r.error(f"evals/evals.yaml is required (minimum {MIN_EVALS} cases)", pdir)
+    """Evals are Vally specs (https://www.npmjs.com/package/@microsoft/vally-cli).
+
+    CI also runs `vally lint` for schema checks; this enforces the agentz minimums.
+    """
+    spec = pdir / "evals" / "eval.yaml"
+    if (pdir / "evals" / "evals.yaml").exists():
+        r.error("evals/evals.yaml is the old placeholder format; move the cases to Vally evals/eval.yaml", pdir / "evals" / "evals.yaml")
+    if not spec.exists():
+        r.error(f"evals/eval.yaml (Vally format) is required, with at least {MIN_EVALS} stimuli", pdir)
         return
     try:
-        data = yaml.safe_load(evals.read_text(encoding="utf-8")) or {}
+        data = yaml.safe_load(spec.read_text(encoding="utf-8")) or {}
     except yaml.YAMLError as exc:
-        r.error(f"invalid YAML: {exc}", evals)
+        r.error(f"invalid YAML: {exc}", spec)
         return
-    cases = data.get("cases") or []
-    ids = [c.get("id") for c in cases if isinstance(c, dict)]
-    if len(cases) < MIN_EVALS:
-        r.error(f"{len(cases)} eval case(s); at least {MIN_EVALS} are required", evals)
-    if len(ids) != len(set(ids)) or None in ids:
-        r.error("every eval case needs a unique id", evals)
-    types = {c.get("type") for c in cases if isinstance(c, dict)}
-    if "trigger" not in types:
-        r.error("include trigger evals (does the skill fire on the right prompts?)", evals)
+
+    stimuli = [s for s in (data.get("stimuli") or []) if isinstance(s, dict)]
+    if len(stimuli) < MIN_EVALS:
+        r.error(f"{len(stimuli)} eval stimuli; at least {MIN_EVALS} are required", spec)
+    names = [s.get("name") for s in stimuli]
+    if None in names or len(names) != len(set(names)):
+        r.error("every stimulus needs a unique name", spec)
+
+    triggered: set[str] = set()
+    positive = negative = 0
+    for s in stimuli:
+        label = s.get("name", "?")
+        if not (s.get("prompt") or s.get("turns")):
+            r.error(f"stimulus '{label}' has no prompt (the input)", spec)
+        graders = [g for g in (s.get("graders") or []) if isinstance(g, dict)]
+        if not graders:
+            r.error(f"stimulus '{label}' has no graders (the expected result)", spec)
+        for g in graders:
+            if g.get("type") != "skill-invocation":
+                continue
+            cfg = g.get("config") or {}
+            if cfg.get("required"):
+                positive += 1
+                triggered.update(cfg["required"])
+            if cfg.get("disallowed"):
+                negative += 1
+        if (s.get("tags") or {}).get("advisory") is True:
+            r.warn(f"stimulus '{label}' is tagged advisory; review it and remove the tag so it counts", spec)
+
+    if positive < 3:
+        r.error(f"{positive} should-trigger case(s); at least 3 skill-invocation 'required' cases are needed", spec)
+    if negative < 2:
+        r.error(f"{negative} should-not-trigger case(s); at least 2 skill-invocation 'disallowed' cases are needed", spec)
+    skills = {d.name for d in (pdir / "skills").iterdir() if (d / "SKILL.md").exists()} if (pdir / "skills").is_dir() else set()
+    for missing in sorted(skills - triggered):
+        r.error(f"skill '{missing}' has no should-trigger eval", spec)
+
+    env = data.get("agent_environment") or {}
+    for skill_path in env.get("skills") or []:
+        if not (spec.parent / skill_path / "SKILL.md").exists():
+            r.error(f"agent_environment.skills entry '{skill_path}' has no SKILL.md", spec)
+    for f in env.get("files") or []:
+        src = f.get("src") if isinstance(f, dict) else None
+        if not src or not (spec.parent / src).exists():
+            r.error(f"agent_environment.files src '{src}' does not exist", spec)
 
 
 # ---------------------------------------------------------------- PR-only checks
@@ -325,12 +367,15 @@ def check_duplicates(r: Reporter, base: str) -> None:
         return out
 
     old_items, new_items = items(old), items(new)
+    # A plugin renamed through the marketplace "renames" map is not a duplicate of its old self.
+    renames = load_json(CLAUDE_MARKETPLACE).get("renames") or {}
     for key, (name, desc) in new_items.items():
         if key in old_items:
             continue
         new_tokens = tokens(name.replace("-", " ") + " " + desc)
         for okey, (oname, odesc) in old_items.items():
-            if okey.split("/")[0] == key.split("/")[0]:
+            old_plugin, new_plugin = okey.split("/")[0], key.split("/")[0]
+            if old_plugin == new_plugin or renames.get(old_plugin) == new_plugin:
                 continue
             old_tokens = tokens(oname.replace("-", " ") + " " + odesc)
             # Overlap coefficient: a short new description that is mostly contained

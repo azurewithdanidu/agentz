@@ -1,0 +1,22 @@
+{
+  "marketplace": "agentz",
+  "plugins": [
+    {
+      "name": "bicep-avm-review",
+      "version": "0.4.0",
+      "description": "Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report.",
+      "category": "development",
+      "owner": "Azure with Danidu",
+      "skills": [
+        {
+          "name": "bicep-avm-review",
+          "description": "Review Azure Bicep templates and parameter files against Azure Verified Modules (AVM) and organisation IaC conventions, and produce a findings report with evidence. Use when the user asks to \"review my Bicep\", \"check this against AVM\", \"is this template production ready\", \"audit our IaC\", or opens a PR that changes *.bicep or *.bicepparam files. Do not use for Terraform, ARM JSON authoring, or for deploying resources."
+        }
+      ],
+      "agents": [
+        { "name": "iac-reviewer", "description": "Read-only reviewer for infrastructure-as-code pull requests." }
+      ],
+      "commands": []
+    }
+  ]
+}
