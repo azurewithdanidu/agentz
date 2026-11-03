@@ -31,7 +31,7 @@ def main() -> int:
     ap.add_argument("--description", required=True)
     ap.add_argument("--owner-name", required=True)
     ap.add_argument("--owner-email", required=True)
-    ap.add_argument("--owner-handle", required=True, help="GitHub team, e.g. @contoso/cloud-infra")
+    ap.add_argument("--owner-handle", required=True, help="GitHub team, e.g. @your-org/your-team or @your-username")
     ap.add_argument("--category", required=True, choices=CATEGORIES)
     ap.add_argument("--skill", required=True)
     ap.add_argument("--skill-description", required=True)

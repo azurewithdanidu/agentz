@@ -1,12 +1,12 @@
 {
-  "marketplace": "contoso-agent-plugins",
+  "marketplace": "agentz",
   "plugins": [
     {
       "name": "bicep-avm-review",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "description": "Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report.",
       "category": "development",
-      "owner": "Cloud Infrastructure Team",
+      "owner": "Azure with Danidu",
       "skills": [
         {
           "name": "bicep-avm-review",
@@ -23,10 +23,10 @@
     },
     {
       "name": "plugin-creator",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "description": "Scaffolds a new plugin that meets the marketplace standard: both manifests, a first skill, an evals file and catalog registration.",
       "category": "productivity",
-      "owner": "Platform Engineering",
+      "owner": "Azure with Danidu",
       "skills": [
         {
           "name": "create-plugin",

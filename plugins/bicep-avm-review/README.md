@@ -4,7 +4,7 @@ Reviews Bicep templates against Azure Verified Modules (AVM) and organisation Ia
 
 | | |
 | --- | --- |
-| **Owner** | Cloud Infrastructure Team (`@contoso/cloud-infra`) |
+| **Owner** | Azure with Danidu (`@azurewithdanidu`) |
 | **Status** | Beta (`0.x`) |
 | **Platforms** | Claude Code, VS Code (Copilot), Copilot CLI, Cursor |
 
@@ -19,7 +19,7 @@ Reviews Bicep templates against Azure Verified Modules (AVM) and organisation Ia
 ## Install
 
 ```text
-/plugin install bicep-avm-review --marketplace contoso/agent-marketplace
+/plugin install bicep-avm-review --marketplace azurewithdanidu/agentz
 ```
 
 See [docs/consuming-plugins.md](../../docs/consuming-plugins.md) for other IDEs.

@@ -1,10 +1,10 @@
 {
   "name": "plugin-creator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Scaffolds a new plugin that meets the marketplace standard: both manifests, a first skill, an evals file and catalog registration.",
   "author": {
-    "name": "Platform Engineering",
-    "email": "platform-engineering@contoso.com"
+    "name": "Azure with Danidu",
+    "email": "danidu@dckloud.com"
   },
   "license": "MIT",
   "keywords": ["scaffold", "plugin", "marketplace", "standards"]

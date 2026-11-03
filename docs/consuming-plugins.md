@@ -2,23 +2,23 @@
 
 Every IDE reads the same repository. Users add the marketplace once, then install only the plugins they need.
 
-Replace `contoso/agent-marketplace` with this repository and `contoso-agent-plugins` with the marketplace name in `.claude-plugin/marketplace.json`.
+The examples use this repository (`azurewithdanidu/agentz`) and the marketplace name `agentz`. If you fork it, replace both with your own repository and the `name` in `.claude-plugin/marketplace.json`.
 
 ## Claude Code
 
 ```text
-/plugin marketplace add contoso/agent-marketplace
-/plugin install bicep-avm-review@contoso-agent-plugins
+/plugin marketplace add azurewithdanidu/agentz
+/plugin install bicep-avm-review@agentz
 ```
 
-On Claude Code 2.1.275 or later, one line does both: `/plugin install bicep-avm-review --marketplace contoso/agent-marketplace`. Browse with `/plugin`. Organisation admins can also sync this repository in claude.ai (**Organization settings > Plugins & skills > Sync from GitHub**) and set each plugin to available, installed by default, or required. The repository must be private or internal on github.com.
+On Claude Code 2.1.275 or later, one line does both: `/plugin install bicep-avm-review --marketplace azurewithdanidu/agentz`. Browse with `/plugin`. Organisation admins can also sync this repository in claude.ai (**Organization settings > Plugins & skills > Sync from GitHub**) and set each plugin to available, installed by default, or required. The repository must be private or internal on github.com.
 
 ## GitHub Copilot CLI
 
 ```shell
-copilot plugin marketplace add contoso/agent-marketplace
-copilot plugin marketplace browse contoso-agent-plugins
-copilot plugin install bicep-avm-review@contoso-agent-plugins
+copilot plugin marketplace add azurewithdanidu/agentz
+copilot plugin marketplace browse agentz
+copilot plugin install bicep-avm-review@agentz
 copilot plugin list
 ```
 
@@ -30,11 +30,11 @@ Add the marketplace to user or workspace settings. The setting is marked Experim
 
 ```json
 "chat.plugins.marketplaces": [
-  "contoso/agent-marketplace"
+  "azurewithdanidu/agentz"
 ]
 ```
 
-To pin a version, append a ref: `contoso/agent-marketplace#v1.4.0`. Then install from the Plugins view in the Agent Customizations editor.
+To pin a version, append a ref: `azurewithdanidu/agentz#v1.4.0`. Then install from the Plugins view in the Agent Customizations editor.
 
 ## Cursor
 
