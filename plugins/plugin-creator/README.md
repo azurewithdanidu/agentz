@@ -4,7 +4,7 @@ Scaffolds a new plugin that meets the marketplace standard: manifests, a first s
 
 | | |
 | --- | --- |
-| **Owner** | Platform Engineering (`@contoso/platform-engineering`) |
+| **Owner** | Azure with Danidu (`@azurewithdanidu`) |
 | **Status** | Stable (`1.x`) |
 | **Platforms** | Claude Code, VS Code (Copilot), Copilot CLI, Cursor |
 
@@ -19,7 +19,7 @@ Scaffolds a new plugin that meets the marketplace standard: manifests, a first s
 ## Install
 
 ```text
-/plugin install plugin-creator --marketplace contoso/agent-marketplace
+/plugin install plugin-creator --marketplace azurewithdanidu/agentz
 ```
 
 See [docs/consuming-plugins.md](../../docs/consuming-plugins.md) for other IDEs.

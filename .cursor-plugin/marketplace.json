@@ -1,11 +1,11 @@
 {
-  "name": "contoso-agent-plugins",
+  "name": "agentz",
   "owner": {
-    "name": "Platform Engineering",
-    "email": "platform-engineering@contoso.com"
+    "name": "Azure with Danidu",
+    "email": "danidu@dckloud.com"
   },
   "metadata": {
-    "description": "Contoso's central marketplace of reviewed agent plugins (skills, agents, commands) for Claude Code, VS Code, Copilot CLI and Cursor."
+    "description": "Agentz by Azure with Danidu: a central marketplace of reviewed agent plugins (skills, agents, commands) for Claude Code, VS Code, Copilot CLI and Cursor."
   },
   "plugins": [
     {

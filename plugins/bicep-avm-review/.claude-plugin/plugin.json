@@ -1,10 +1,10 @@
 {
   "name": "bicep-avm-review",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report.",
   "author": {
-    "name": "Cloud Infrastructure Team",
-    "email": "cloud-infra@contoso.com"
+    "name": "Azure with Danidu",
+    "email": "danidu@dckloud.com"
   },
   "license": "MIT",
   "keywords": ["azure", "bicep", "avm", "iac", "review"]

@@ -1,11 +1,11 @@
-# The central team owns the marketplace plumbing.
-*                              @contoso/platform-engineering
-/.claude-plugin/               @contoso/platform-engineering
-/.cursor-plugin/               @contoso/platform-engineering
-/scripts/                      @contoso/platform-engineering
-/.github/                      @contoso/platform-engineering
-/docs/                         @contoso/platform-engineering
+# The marketplace owner reviews the plumbing.
+*                              @azurewithdanidu
+/.claude-plugin/               @azurewithdanidu
+/.cursor-plugin/               @azurewithdanidu
+/scripts/                      @azurewithdanidu
+/.github/                      @azurewithdanidu
+/docs/                         @azurewithdanidu
 
-# Each plugin is owned by the team that publishes it.
-/plugins/plugin-creator/ @contoso/platform-engineering
-/plugins/bicep-avm-review/ @contoso/cloud-infra
+# Each plugin is owned by the team that publishes it. Use a GitHub team (@org/team) when the repo lives in an organisation.
+/plugins/plugin-creator/ @azurewithdanidu
+/plugins/bicep-avm-review/ @azurewithdanidu
