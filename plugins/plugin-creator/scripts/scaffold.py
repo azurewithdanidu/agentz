@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Scaffold a new plugin that meets the marketplace standard.
 
-Creates plugins/<name>/ with a Claude manifest, a first skill, an evals file and a README,
+Creates plugins/<name>/ in the Agent Plugins 1.0 format (root plugin.json, skills/, evals, README),
 registers the plugin in .claude-plugin/marketplace.json, and adds a CODEOWNERS line.
-Run scripts/sync_manifests.py and scripts/build_catalog.py afterwards.
+Run scripts/sync_manifests.py (generates the Claude Code and Cursor files) and
+scripts/build_catalog.py afterwards. Add agents or commands under com.github.copilot/ if needed.
 Standard library only.
 """
 from __future__ import annotations
@@ -16,6 +17,7 @@ from pathlib import Path
 
 NAME_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$")
 CATEGORIES = ["productivity", "development", "security", "observability"]
+AP_PLUGIN_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
 
 
 def find_root(start: Path) -> Path:
@@ -48,9 +50,10 @@ def main() -> int:
     if pdir.exists() or any(p["name"] == a.name for p in market["plugins"]):
         sys.exit(f"Plugin '{a.name}' already exists.")
 
-    # Manifest
-    (pdir / ".claude-plugin").mkdir(parents=True)
+    # Agent Plugins 1.0 manifest
+    pdir.mkdir(parents=True)
     manifest = {
+        "$schema": AP_PLUGIN_SCHEMA,
         "name": a.name,
         "version": "0.1.0",
         "description": a.description,
@@ -58,7 +61,7 @@ def main() -> int:
         "license": "MIT",
         "keywords": [],
     }
-    (pdir / ".claude-plugin" / "plugin.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    (pdir / "plugin.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
 
     # First skill
     sdir = pdir / "skills" / a.skill
@@ -119,7 +122,8 @@ cases:
 | --- | --- |
 | **Owner** | {a.owner_name} (`{a.owner_handle}`) |
 | **Status** | Beta (`0.x`) |
-| **Platforms** | Claude Code, VS Code (Copilot), Copilot CLI, Cursor |
+| **Format** | Agent Plugins 1.0 (Claude Code and Cursor files generated) |
+| **Platforms** | VS Code (Copilot), Copilot CLI, Claude Code, Cursor |
 
 ## Install
 

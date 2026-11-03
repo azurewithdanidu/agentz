@@ -6,15 +6,16 @@ Reviews Bicep templates against Azure Verified Modules (AVM) and organisation Ia
 | --- | --- |
 | **Owner** | Azure with Danidu (`@azurewithdanidu`) |
 | **Status** | Beta (`0.x`) |
-| **Platforms** | Claude Code, VS Code (Copilot), Copilot CLI, Cursor |
+| **Format** | Agent Plugins 1.0 (Claude Code and Cursor files generated) |
+| **Platforms** | VS Code (Copilot), Copilot CLI, Claude Code, Cursor |
 
 ## What's inside
 
 | Component | Name | Portable across IDEs |
 | --- | --- | --- |
 | Skill | `bicep-avm-review` | Yes |
-| Agent | `iac-reviewer` | Varies by IDE |
-| MCP server | `microsoft-learn` | Yes |
+| Agent | `iac-reviewer` | Copilot namespace; Claude copy generated |
+| MCP server | `microsoft-learn` (`streamable-http`) | Yes |
 
 ## Install
 

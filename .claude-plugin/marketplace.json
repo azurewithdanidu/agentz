@@ -9,7 +9,7 @@
     {
       "name": "plugin-creator",
       "source": "./plugins/plugin-creator",
-      "description": "Scaffolds a new plugin that meets the marketplace standard: both manifests, a first skill, an evals file and catalog registration.",
+      "description": "Scaffolds a new Agent Plugins 1.0 plugin that meets the marketplace standard: manifest, a first skill, an evals file and catalog registration.",
       "category": "productivity"
     },
     {
