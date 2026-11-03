@@ -10,7 +10,7 @@ One repository, authored once in the open [Agent Plugins 1.0](https://agent-plug
 | Plugin | Version | Category | Owner | Skills | Description |
 | --- | --- | --- | --- | --- | --- |
 | [`agentz-publisher`](plugins/agentz-publisher/) | 2.0.0 | productivity | Azure with Danidu | `analyse-request`, `build-plugin`, `research-catalog`, `validate-plugin` | Guides contributors through publishing to the agentz marketplace in four phases: Analyse the idea, Research the catalog for duplicates, Build with HVE Core, and Validate with evals before opening a pull request. |
-| [`bicep-avm-review`](plugins/bicep-avm-review/) | 0.4.0 | development | Azure with Danidu | `bicep-avm-review` | Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report. |
+| [`bicep-avm-review`](plugins/bicep-avm-review/) | 0.5.0 | development | Azure with Danidu | `bicep-avm-review` | Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report. |
 <!-- plugins-table:end -->
 
 This table is generated from `catalog.json` by `scripts/build_catalog.py`.
