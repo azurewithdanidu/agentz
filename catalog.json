@@ -61,6 +61,21 @@
         }
       ],
       "commands": []
+    },
+    {
+      "name": "iac-checker",
+      "version": "0.1.0",
+      "description": "Checks Bicep templates against infrastructure best practices",
+      "category": "development",
+      "owner": "Danidu Weerasinghe",
+      "skills": [
+        {
+          "name": "bicep-template-check",
+          "description": "Review Azure Bicep templates and parameter files against Azure Verified Modules (AVM) and organisation IaC conventions, and produce a findings report. Use when the user asks to \"review my Bicep\", \"check this against AVM\", \"audit our IaC\", or opens a PR that changes *.bicep files."
+        }
+      ],
+      "agents": [],
+      "commands": []
     }
   ]
 }
