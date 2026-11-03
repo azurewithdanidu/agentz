@@ -14,6 +14,7 @@ import sys
 
 from marketplace_lib import (
     CATALOG,
+    COPILOT_NS,
     CLAUDE_MARKETPLACE,
     README,
     dump_json,
@@ -31,7 +32,7 @@ def build_catalog() -> dict:
     plugins = []
     for entry in sorted(market["plugins"], key=lambda e: e["name"]):
         pdir = plugin_dir(entry)
-        manifest_path = pdir / ".claude-plugin" / "plugin.json"
+        manifest_path = pdir / "plugin.json"  # Agent Plugins manifest
         manifest = load_json(manifest_path) if manifest_path.exists() else {}
 
         skills = []
@@ -40,12 +41,13 @@ def build_catalog() -> dict:
             skills.append({"name": fm.get("name", skill_md.parent.name), "description": fm.get("description", "")})
 
         agents = []
-        for agent_md in sorted(pdir.glob("agents/*.md")):
+        for agent_md in sorted(pdir.glob(f"{COPILOT_NS}/agents/*.agent.md")):
             fm = read_frontmatter(agent_md) or {}
-            agents.append({"name": fm.get("name", agent_md.stem), "description": fm.get("description", "")})
+            default = agent_md.name.removesuffix(".agent.md")
+            agents.append({"name": fm.get("name", default), "description": fm.get("description", "")})
 
         commands = []
-        for cmd_md in sorted(pdir.glob("commands/*.md")):
+        for cmd_md in sorted(pdir.glob(f"{COPILOT_NS}/commands/*.md")):
             fm = read_frontmatter(cmd_md) or {}
             commands.append({"name": cmd_md.stem, "description": fm.get("description", "")})
 

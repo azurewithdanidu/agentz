@@ -10,8 +10,9 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-CLAUDE_MARKETPLACE = ROOT / ".claude-plugin" / "marketplace.json"
-CURSOR_MARKETPLACE = ROOT / ".cursor-plugin" / "marketplace.json"
+CLAUDE_MARKETPLACE = ROOT / ".claude-plugin" / "marketplace.json"   # registry: source of truth
+COPILOT_MARKETPLACE = ROOT / ".github" / "plugin" / "marketplace.json"  # generated
+CURSOR_MARKETPLACE = ROOT / ".cursor-plugin" / "marketplace.json"       # generated
 CATALOG = ROOT / "catalog.json"
 README = ROOT / "README.md"
 CODEOWNERS = ROOT / ".github" / "CODEOWNERS"
@@ -19,6 +20,26 @@ CODEOWNERS = ROOT / ".github" / "CODEOWNERS"
 NAME_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$")
 SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?$")
 CATEGORIES = {"productivity", "development", "security", "observability"}
+
+# Agent Plugins 1.0 (https://agent-plugins.org) is the source format for every plugin.
+AP_PLUGIN_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
+AP_MCP_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"
+AP_PLUGIN_FIELDS = {
+    "$schema", "name", "version", "description", "author", "homepage",
+    "repository", "license", "keywords", "extensions",
+}
+AP_MCP_TYPES = {"stdio", "streamable-http", "sse"}
+COPILOT_NS = "com.github.copilot"   # VS Code, Copilot CLI and the Copilot app read agents/commands/rules/hooks here
+
+# Copilot tool sets -> Claude Code tools, used to generate Claude agents from Copilot agents.
+COPILOT_TO_CLAUDE_TOOLS = {
+    "read": ["Read"],
+    "search": ["Grep", "Glob"],
+    "edit": ["Edit", "Write"],
+    "execute": ["Bash"],
+    "web": ["WebFetch", "WebSearch"],
+    "todo": ["TodoWrite"],
+}
 
 
 def load_json(path: Path) -> dict:
@@ -40,6 +61,18 @@ def write_if_changed(path: Path, content: str) -> bool:
 
 def plugin_dir(entry: dict) -> Path:
     return (ROOT / entry["source"]).resolve()
+
+
+def split_frontmatter(path: Path) -> tuple[dict | None, str]:
+    """Return (frontmatter, body) for a Markdown file."""
+    text = path.read_text(encoding="utf-8")
+    if not text.startswith("---"):
+        return None, text
+    parts = text.split("---", 2)
+    if len(parts) < 3:
+        return None, text
+    data = yaml.safe_load(parts[1])
+    return (data if isinstance(data, dict) else None), parts[2].lstrip("\n")
 
 
 def read_frontmatter(path: Path) -> dict | None:

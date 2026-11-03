@@ -20,9 +20,15 @@ from pathlib import Path
 import yaml
 
 from marketplace_lib import (
+    AP_MCP_SCHEMA,
+    AP_MCP_TYPES,
+    AP_PLUGIN_FIELDS,
+    AP_PLUGIN_SCHEMA,
     CATEGORIES,
     CLAUDE_MARKETPLACE,
     CODEOWNERS,
+    COPILOT_NS,
+    COPILOT_TO_CLAUDE_TOOLS,
     NAME_RE,
     ROOT,
     SEMVER_RE,
@@ -102,13 +108,17 @@ def check_plugin(r: Reporter, entry: dict, codeowners: str) -> None:
         r.error(f"registered plugin '{name}' has no folder", CLAUDE_MARKETPLACE)
         return
 
-    # Manifest
-    manifest_path = pdir / ".claude-plugin" / "plugin.json"
+    # Agent Plugins 1.0 manifest (the source of truth)
+    manifest_path = pdir / "plugin.json"
     try:
         manifest = load_json(manifest_path)
     except (OSError, json.JSONDecodeError) as exc:
-        r.error(f"missing or invalid plugin.json: {exc}", manifest_path)
+        r.error(f"missing or invalid Agent Plugins manifest plugin.json: {exc}", manifest_path)
         manifest = {}
+    if manifest.get("$schema") != AP_PLUGIN_SCHEMA:
+        r.error(f"$schema must be {AP_PLUGIN_SCHEMA}", manifest_path)
+    for field in sorted(set(manifest) - AP_PLUGIN_FIELDS):
+        r.error(f"'{field}' is not an Agent Plugins 1.0 field (the manifest schema is closed)", manifest_path)
     if manifest.get("name") != name:
         r.error("plugin.json name must match the folder name", manifest_path)
     if not SEMVER_RE.match(str(manifest.get("version", ""))):
@@ -116,10 +126,16 @@ def check_plugin(r: Reporter, entry: dict, codeowners: str) -> None:
     if not manifest.get("description"):
         r.error("description is required", manifest_path)
     author = manifest.get("author", {})
-    if not author.get("name") or not author.get("email"):
-        r.error("author.name and author.email are required", manifest_path)
+    if not isinstance(author, dict) or not author.get("name") or not author.get("email"):
+        r.error("author must be an object with name and email", manifest_path)
+    elif set(author) - {"name", "email", "url"}:
+        r.error("author may only contain name, email and url", manifest_path)
+    if "extensions" in manifest and not isinstance(manifest["extensions"], dict):
+        r.error("extensions must be an object keyed by namespace", manifest_path)
     if "version" in entry:
         r.warn("set version in plugin.json only; the marketplace entry copy is ignored", CLAUDE_MARKETPLACE)
+
+    check_mcp(r, pdir)
 
     # Required files and forbidden layout
     if not (pdir / "README.md").exists():
@@ -127,7 +143,9 @@ def check_plugin(r: Reporter, entry: dict, codeowners: str) -> None:
     if (pdir / "bin").is_dir():
         r.error("top-level bin/ is not allowed (Claude org sync rejects it). Use scripts/", pdir / "bin")
     if (pdir / "hooks.json").exists():
-        r.error("hooks belong in hooks/hooks.json, not hooks.json at the plugin root", pdir / "hooks.json")
+        r.error(f"hooks belong in {COPILOT_NS}/hooks/hooks.json, not at the plugin root", pdir / "hooks.json")
+    if (pdir / ".plugin").exists():
+        r.error("legacy OpenPlugin .plugin/ folder is not used here; plugin.json lives at the plugin root", pdir / ".plugin")
 
     # Ownership
     if f"/plugins/{name}/" not in codeowners:
@@ -140,15 +158,28 @@ def check_plugin(r: Reporter, entry: dict, codeowners: str) -> None:
     for sdir in skill_dirs:
         check_skill(r, sdir)
 
-    # Agents and commands
-    for agent in sorted(pdir.glob("agents/*.md")):
-        fm = read_frontmatter(agent)
+    # Client-specific components live in the Copilot namespace. agents/ and commands/ are generated.
+    ns = pdir / COPILOT_NS
+    for f in sorted((ns / "agents").glob("*")) if (ns / "agents").is_dir() else []:
+        if not f.name.endswith(".agent.md"):
+            r.error("agent files must be named <name>.agent.md", f)
+            continue
+        fm = read_frontmatter(f)
         if not fm or not fm.get("name") or not fm.get("description"):
-            r.error("agent frontmatter needs name and description", agent)
-    for cmd in sorted(pdir.glob("commands/*.md")):
-        fm = read_frontmatter(cmd)
+            r.error("agent frontmatter needs name and description", f)
+            continue
+        if fm["name"] != f.name.removesuffix(".agent.md"):
+            r.error("agent name must match the file name", f)
+        tools = fm.get("tools") or []
+        tools = [t.strip() for t in tools.split(",")] if isinstance(tools, str) else tools
+        unknown = [t for t in tools if t not in COPILOT_TO_CLAUDE_TOOLS]
+        if unknown:
+            r.error(f"tools {unknown} have no Claude mapping; use {sorted(COPILOT_TO_CLAUDE_TOOLS)} "
+                    "or extend COPILOT_TO_CLAUDE_TOOLS", f)
+    for f in sorted((ns / "commands").glob("*.md")) if (ns / "commands").is_dir() else []:
+        fm = read_frontmatter(f)
         if not fm or not fm.get("description"):
-            r.error("command frontmatter needs a description", cmd)
+            r.error("command frontmatter needs a description", f)
 
     # Evals
     check_evals(r, pdir)
@@ -160,6 +191,35 @@ def check_plugin(r: Reporter, entry: dict, codeowners: str) -> None:
             for label, pattern in SECRET_PATTERNS.items():
                 if pattern.search(text):
                     r.error(f"possible {label} committed", f)
+
+
+def check_mcp(r: Reporter, pdir: Path) -> None:
+    mcp = pdir / "mcp.json"
+    if not mcp.exists():
+        return
+    try:
+        data = load_json(mcp)
+    except json.JSONDecodeError as exc:
+        r.error(f"invalid JSON: {exc}", mcp)
+        return
+    if data.get("$schema") != AP_MCP_SCHEMA:
+        r.error(f"$schema must be {AP_MCP_SCHEMA}", mcp)
+    for field in sorted(set(data) - {"$schema", "mcpServers"}):
+        r.error(f"unexpected top-level field '{field}'", mcp)
+    servers = data.get("mcpServers")
+    if not isinstance(servers, dict) or not servers:
+        r.error("mcpServers must be a non-empty object", mcp)
+        return
+    for name, server in servers.items():
+        kind = server.get("type")
+        if kind not in AP_MCP_TYPES:
+            r.error(f"server '{name}': type must be one of {sorted(AP_MCP_TYPES)}", mcp)
+        elif kind == "stdio" and not server.get("command"):
+            r.error(f"server '{name}': stdio servers need a command", mcp)
+        elif kind != "stdio" and not server.get("url"):
+            r.error(f"server '{name}': {kind} servers need a url", mcp)
+        if kind == "sse":
+            r.warn(f"server '{name}': sse is deprecated; use streamable-http", mcp)
 
 
 def check_skill(r: Reporter, sdir: Path) -> None:
@@ -227,18 +287,20 @@ def check_version_bumps(r: Reporter, base: str, market: dict) -> None:
     for entry in market.get("plugins", []):
         name = entry["name"]
         prefix = f"plugins/{name}/"
-        generated = {f"{prefix}.cursor-plugin/plugin.json", f"{prefix}mcp.json"}
-        if not any(f.startswith(prefix) and f not in generated for f in changed):
+        generated_prefixes = tuple(f"{prefix}{g}" for g in
+                                   (".claude-plugin/", ".cursor-plugin/", ".mcp.json", "agents/", "commands/"))
+        if not any(f.startswith(prefix) and not f.startswith(generated_prefixes) for f in changed):
             continue
-        old_raw = base_file(base, f"{prefix}.claude-plugin/plugin.json")
+        # Base may predate the Agent Plugins layout, so fall back to the old Claude manifest.
+        old_raw = base_file(base, f"{prefix}plugin.json") or base_file(base, f"{prefix}.claude-plugin/plugin.json")
         if old_raw is None:
             continue  # new plugin
         try:
             old_v = json.loads(old_raw)["version"]
-            new_v = load_json(ROOT / prefix / ".claude-plugin" / "plugin.json")["version"]
+            new_v = load_json(ROOT / prefix / "plugin.json")["version"]
             if semver_tuple(new_v) <= semver_tuple(old_v):
                 r.error(f"plugin changed but version was not bumped ({old_v} -> {new_v})",
-                        ROOT / prefix / ".claude-plugin" / "plugin.json")
+                        ROOT / prefix / "plugin.json")
         except (KeyError, ValueError, json.JSONDecodeError):
             r.error("cannot compare versions with base", ROOT / prefix)
 

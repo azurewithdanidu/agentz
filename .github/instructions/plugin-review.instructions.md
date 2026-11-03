@@ -29,7 +29,8 @@ You are the first reviewer for plugin submissions. CI already enforces the hard 
 
 ## 4. Portability
 
-- Logic belongs in skills, which every IDE loads. Agents, commands and hooks should stay thin because their support varies by IDE.
+- Logic belongs in skills, which every client loads. Agents, commands and hooks are client-specific under Agent Plugins 1.0, so they should stay thin and delegate to skills.
+- Agents and commands are authored only in `com.github.copilot/`. Flag any hand-written change to the generated `agents/`, `commands/`, `.claude-plugin/` or `.cursor-plugin/` files.
 - Flag IDE-specific syntax in a skill.
 
 ## 5. README and ownership
