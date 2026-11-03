@@ -63,7 +63,7 @@ State which of these apply:
 
 ## 6. Evals
 
-Write at least 10 cases in `evals/evals.yaml`:
+Write at least 10 stimuli in `evals/eval.yaml` ([Vally](https://www.npmjs.com/package/@microsoft/vally-cli) format). The full guide, with grader choices and an example, is `plugins/agentz-publisher/skills/validate-plugin/references/eval-guide.md`. With HVE Core installed, `vally-tests` can draft them from your `SKILL.md`.
 
 - **Trigger cases** that should fire, and that should not fire on nearby requests.
 - **Task cases** that test the skill's real failure modes, not just the happy path.

@@ -7,5 +7,5 @@
 /docs/                         @azurewithdanidu
 
 # Each plugin is owned by the team that publishes it. Use a GitHub team (@org/team) when the repo lives in an organisation.
-/plugins/plugin-creator/ @azurewithdanidu
+/plugins/agentz-publisher/ @azurewithdanidu
 /plugins/bicep-avm-review/ @azurewithdanidu

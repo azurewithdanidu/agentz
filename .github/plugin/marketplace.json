@@ -7,9 +7,9 @@
   },
   "plugins": [
     {
-      "name": "plugin-creator",
-      "source": "./plugins/plugin-creator",
-      "description": "Scaffolds a new Agent Plugins 1.0 plugin that meets the marketplace standard: manifest, a first skill, an evals file and catalog registration.",
+      "name": "agentz-publisher",
+      "source": "./plugins/agentz-publisher",
+      "description": "Guides contributors through publishing to the agentz marketplace in four phases: Analyse the idea, Research the catalog for duplicates, Build with HVE Core, and Validate with evals before opening a pull request.",
       "category": "productivity"
     },
     {
@@ -18,5 +18,8 @@
       "description": "Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report.",
       "category": "development"
     }
-  ]
+  ],
+  "renames": {
+    "plugin-creator": "agentz-publisher"
+  }
 }

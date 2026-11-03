@@ -2,8 +2,49 @@
   "marketplace": "agentz",
   "plugins": [
     {
+      "name": "agentz-publisher",
+      "version": "2.0.0",
+      "description": "Guides contributors through publishing to the agentz marketplace in four phases: Analyse the idea, Research the catalog for duplicates, Build with HVE Core, and Validate with evals before opening a pull request.",
+      "category": "productivity",
+      "owner": "Azure with Danidu",
+      "skills": [
+        {
+          "name": "analyse-request",
+          "description": "Analyse what someone wants to publish to the agentz marketplace and capture it as an intent brief before anything is built. Use when someone says \"I want to publish an agent\", \"I have an idea for a skill\", \"can we share this prompt with other teams\", or starts the agentz publishing flow. This is phase 1 of 4 (Analyse, Research, Build, Validate). Do not use to build or edit files, or for plugins that already exist."
+        },
+        {
+          "name": "build-plugin",
+          "description": "Build a new agentz marketplace plugin from a confirmed intent brief, scaffolding the Agent Plugins 1.0 layout and authoring its skill, using HVE Core's hve-builder when it's installed. Use when the user says \"create a plugin\", \"new plugin\", \"scaffold a skill for the marketplace\", or after research-catalog returns a \"new\" verdict. This is phase 3 of 4 (Analyse, Research, Build, Validate). Do not use to edit an existing plugin's logic or to install plugins."
+        },
+        {
+          "name": "research-catalog",
+          "description": "Search the agentz marketplace catalog for plugins, skills, agents and commands that already do what a new one would, and return a reuse, extend or new verdict. Use when someone asks \"does agentz already have\", \"is there a skill for\", or plans a new agent, skill or plugin. Use during research, including with rpi-research, and before hve-builder creates an artifact for agentz. This is phase 2 of 4 (Analyse, Research, Build, Validate). Do not use to build anything or to review an open pull request."
+        },
+        {
+          "name": "validate-plugin",
+          "description": "Validate a new or changed agentz plugin before publishing by writing its Vally evals, running them, running the marketplace gate locally, and producing a publish-readiness report. Use when the user says \"validate my plugin\", \"write evals for this skill\", \"is my plugin ready to publish\", or after build-plugin finishes. This is phase 4 of 4 (Analyse, Research, Build, Validate). Do not use to review someone else's pull request."
+        }
+      ],
+      "agents": [
+        {
+          "name": "publisher",
+          "description": "Guides someone through publishing an agent, skill or plugin to the agentz marketplace in four phases (Analyse, Research, Build, Validate). Use when someone wants to publish or share an agent or skill with other teams. Delegates each phase to its agentz-publisher skill."
+        }
+      ],
+      "commands": [
+        {
+          "name": "agentz-init",
+          "description": "Set up this machine to contribute to the agentz marketplace (Python, Vally, HVE Core, agentz plugins)"
+        },
+        {
+          "name": "new-plugin",
+          "description": "Publish a new agent, skill or plugin to the agentz marketplace (Analyse, Research, Build, Validate)"
+        }
+      ]
+    },
+    {
       "name": "bicep-avm-review",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "description": "Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report.",
       "category": "development",
       "owner": "Azure with Danidu",
@@ -20,26 +61,6 @@
         }
       ],
       "commands": []
-    },
-    {
-      "name": "plugin-creator",
-      "version": "1.1.0",
-      "description": "Scaffolds a new Agent Plugins 1.0 plugin that meets the marketplace standard: manifest, a first skill, an evals file and catalog registration.",
-      "category": "productivity",
-      "owner": "Azure with Danidu",
-      "skills": [
-        {
-          "name": "create-plugin",
-          "description": "Scaffold a new plugin for the central marketplace so it meets the marketplace standard from the start. Use when the user says \"create a plugin\", \"new plugin\", \"scaffold a skill for the marketplace\", \"publish my agent to the marketplace\", or wants to start contributing a plugin. Do not use to edit an existing plugin's logic or to install plugins."
-        }
-      ],
-      "agents": [],
-      "commands": [
-        {
-          "name": "new-plugin",
-          "description": "Scaffold a new marketplace plugin that meets the publishing standard"
-        }
-      ]
     }
   ]
 }

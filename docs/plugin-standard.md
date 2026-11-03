@@ -2,6 +2,8 @@
 
 Every plugin in this marketplace is authored in the open [Agent Plugins 1.0](https://agent-plugins.org) format, with VS Code and GitHub Copilot as the primary clients. Claude Code and Cursor don't read that format yet (Cursor only partly), so their files are generated from it.
 
+The easiest way to meet this standard is the `agentz-publisher` plugin, which walks you through four phases: Analyse, Research, Build and Validate. See [Building with HVE Core](#building-with-hve-core).
+
 **Enforced by** says who checks each rule.
 
 ## Mandatory
@@ -14,8 +16,8 @@ Every plugin in this marketplace is authored in the open [Agent Plugins 1.0](htt
 | 4 | Version bumped in `plugin.json` on every change (patch, minor or major) | CI (PRs) |
 | 5 | At least one skill at `skills/<name>/SKILL.md`, frontmatter `name` matching the folder | CI |
 | 6 | Skill description of 50 to 1,024 characters that says when to use it and when not to | CI and Copilot review |
-| 7 | `evals/evals.yaml` with at least 10 cases, including trigger cases that should and should not fire | CI (count) and Copilot review (quality) |
-| 8 | Evals pass | CI (once the eval runner is wired up) |
+| 7 | Vally evals in `evals/eval.yaml`: at least 10 stimuli, 3+ should-trigger (every skill covered), 2+ should-not-trigger, each with a prompt and graders | CI (`validate_repo.py`, `vally lint`) and Copilot review (quality) |
+| 8 | Evals pass (3 runs, threshold 0.7) | CI on changed plugins, when the `COPILOT_GITHUB_TOKEN` secret is set |
 | 9 | `README.md` with owner, status, platforms and usage | CI (exists) and Copilot review (content) |
 | 10 | A CODEOWNERS line for `/plugins/<name>/` | CI |
 | 11 | No secrets, keys or tokens in any file | CI |
@@ -40,7 +42,8 @@ plugins/<name>/
 │   ├── agents/<agent>.agent.md         #   custom agents
 │   ├── commands/<command>.md           #   slash commands
 │   └── hooks/hooks.json                #   hooks (avoid in shared plugins)
-├── evals/evals.yaml                    # SOURCE: required; at least 10 cases
+├── evals/eval.yaml                     # SOURCE: required; Vally evals, at least 10 stimuli
+├── evals/fixtures/                     # SOURCE: small, fake input files for evals
 ├── README.md                           # SOURCE: required
 │
 ├── .claude-plugin/plugin.json          # GENERATED for Claude Code
@@ -97,3 +100,18 @@ Any other tool name fails CI. Extend `COPILOT_TO_CLAUDE_TOOLS` in `scripts/marke
 
 - `0.x` means beta and `1.0.0` or later means stable. Promotion is a version bump, not a rename.
 - To rename or retire a plugin, add it to the `renames` map in `.claude-plugin/marketplace.json` so existing Claude installs follow it.
+
+## Building with HVE Core
+
+[HVE Core](https://github.com/microsoft/hve-core) is Microsoft's framework for authoring agents and skills. agentz uses it as the build framework and adds the marketplace layer on top. HVE Core is optional: the gate doesn't depend on it, so anyone who meets the standard can publish.
+
+| Phase | Tool | What it adds |
+| --- | --- | --- |
+| Analyse | `agentz-publisher` / `analyse-request` | Intent brief: problem, triggers, non-triggers, failure modes |
+| Research | `agentz-publisher` / `research-catalog` | Reuse, extend or new verdict against `catalog.json` (also used during HVE `rpi-research`) |
+| Build | HVE Core `hve-builder` (via `build-plugin`) | Authoring against HVE's requirements catalog, with an independent reviewer |
+| Validate | HVE Core `vally-tests` + Vally (via `validate-plugin`) | Evals drafted from the skill, linted and run before the PR |
+
+Two instruction files make HVE Core work inside agentz without changing it: `.github/instructions/agentz-authoring.instructions.md` keeps `hve-builder` in the plugin layout, and `.github/instructions/agentz-evals.instructions.md` routes `vally-tests` output to `plugins/<name>/evals/eval.yaml`.
+
+Set up a machine with `scripts/init.sh` (macOS, Linux, WSL) or `scripts/init.ps1` (Windows), or the `/agentz-init` command. Opening the repository in VS Code also recommends the HVE Core extension.
