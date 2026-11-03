@@ -28,14 +28,14 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
   - `bicep-avm-review`: reference example of the skill structure
 - `scripts/`: `sync_manifests.py`, `build_catalog.py`, `validate_repo.py`, `marketplace_lib.py` (needs PyYAML)
 - `docs/`: `plugin-standard.md`, `skill-authoring-standard.md`, `consuming-plugins.md`
-- `.github/`: `workflows/validate.yml`, `CODEOWNERS`, `copilot-instructions.md`, `instructions/plugin-review.instructions.md`, PR template
+- `.github/`: `workflows/validate.yml`, `CODEOWNERS`, `copilot-instructions.md`, `instructions/*.instructions.md` (Copilot PR review rules, split by path), PR template
 
 ## The gate
 
 - CI (`validate_repo.py`) blocks on: Agent Plugins manifest and `mcp.json` schema, agent tool mapping, naming, version bump, at least 10 evals incl. trigger cases, broken links, secrets, CODEOWNERS, stale generated files.
 - CI (`claude plugin validate .`) runs Anthropic's validator.
 - Duplicate check: overlap coefficient on skill/agent names + descriptions vs base `catalog.json`; warns at >= 0.6. Calibrated on only a few skills; retune as the catalog grows.
-- Copilot code review handles judgment calls (overlap, skill quality, eval quality, portability) via the instructions files. Deterministic checks stay in CI.
+- Copilot code review checks every rule (submission, manifest, skills, agents, evals, gate changes) via `.github/copilot-instructions.md` and path-specific files in `.github/instructions/`. CI stays authoritative and blocks merges; Copilot explains problems early. Copilot reads instructions from the PR branch, so `gate-changes.instructions.md` flags any PR that weakens the gate.
 
 ## Branches
 

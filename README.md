@@ -49,7 +49,7 @@ Every IDE is covered in [docs/consuming-plugins.md](docs/consuming-plugins.md).
 | CI (`scripts/validate_repo.py`) | Agent Plugins manifest and `mcp.json` schema, naming, version bump, 10+ evals, agent tool mapping, links, secrets, CODEOWNERS, generated files | Yes |
 | CI (`claude plugin validate`) | Anthropic's validator on the generated Claude files | Yes |
 | CI (duplicate check) | Similarity of new skills and agents to existing ones | No, warns |
-| Copilot code review | Overlap, skill quality, eval quality, portability, README | No, comments |
+| Copilot code review | Every rule in `.github/instructions/`: reuse and duplicates, manifest and MCP, skill quality, agents and generated files, eval coverage, changes to the gate | No, comments |
 | CODEOWNERS approval | Plugin owner and marketplace owner | Yes |
 
 ## Repository layout
