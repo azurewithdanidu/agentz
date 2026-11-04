@@ -114,4 +114,4 @@ Any other tool name fails CI. Extend `COPILOT_TO_CLAUDE_TOOLS` in `scripts/marke
 
 Two instruction files make HVE Core work inside agentz without changing it: `.github/instructions/agentz-authoring.instructions.md` keeps `hve-builder` in the plugin layout, and `.github/instructions/agentz-evals.instructions.md` routes `vally-tests` output to `plugins/<name>/evals/eval.yaml`.
 
-Set up a machine with `scripts/init.sh` (macOS, Linux, WSL) or `scripts/init.ps1` (Windows), or the `/agentz-init` command. Opening the repository in VS Code also recommends the HVE Core extension.
+Set up a machine with the `onboarding` plugin: install it and run `/init`. The script behind it is `plugins/onboarding/skills/setup-machine/scripts/setup.sh` (macOS, Linux, WSL) or `setup.ps1` (Windows). Opening the repository in VS Code also recommends the HVE Core extension.

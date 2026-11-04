@@ -1,0 +1,12 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "onboarding",
+  "version": "0.1.0",
+  "description": "Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors",
+  "author": {
+    "name": "Danidu Weerasinghe",
+    "email": "danidu@dckloud.com"
+  },
+  "license": "MIT",
+  "keywords": ["onboarding", "setup", "marketplace"]
+}
