@@ -1,19 +1,16 @@
-# What each role installs
+# What the setup installs
 
-| Step | User | Contributor |
-| --- | --- | --- |
-| Add the `agentz` marketplace to Copilot CLI and Claude Code (when installed) | Yes | Yes |
-| Install the plugins named with `--plugins` | Yes | Yes |
-| Install `agentz-publisher` | No | Yes |
-| VS Code: GitHub Copilot Chat extension | Yes | Yes |
-| VS Code: HVE Core extension (`ise-hve-essentials.hve-core`) | No | Yes, unless `--skip-hve` |
-| Copilot CLI: `hve-core` plugin from `microsoft/hve-core` | No | Yes, unless `--skip-hve` |
-| Python 3.10+ with PyYAML | No | Yes |
-| Node.js 20+ and Vally 0.20.0 (via `npx`) | No | Yes |
-| `.agentz/` working folder and a gate check (only in an agentz clone) | No | Yes |
+| Step | Detail |
+| --- | --- |
+| Python 3.10+ with PyYAML | Needed by the marketplace scripts (`validate_repo.py`, `sync_manifests.py`) |
+| Node.js 20+ and Vally 0.20.0 (via `npx`) | Lints and runs the plugin evals |
+| VS Code extensions | GitHub Copilot Chat, and the HVE Core extension (`ise-hve-essentials.hve-core`) unless `--skip-hve` |
+| Copilot CLI | The `agentz` marketplace, `agentz-publisher`, and `hve-core` from `microsoft/hve-core` unless `--skip-hve` |
+| Claude Code | The `agentz` marketplace and `agentz-publisher`. HVE Core is not available there |
+| `.agentz/` folder | Git-ignored notes for the publishing phases (only in an agentz clone) |
+| Gate check | Runs `validate_repo.py` (only in an agentz clone) |
 
 ## Left to do by hand
 
-- VS Code: add `"azurewithdanidu/agentz"` to the `chat.plugins.marketplaces` setting (Experimental), then install plugins from the Plugins view.
-- Cursor: team marketplaces are configured by an admin in the Cursor dashboard.
-- Claude Code: HVE Core is not available there; use VS Code or Copilot CLI for `hve-builder` and `vally-tests`.
+- VS Code: add `"azurewithdanidu/agentz"` to the `chat.plugins.marketplaces` setting (Experimental), then install `agentz-publisher` from the Plugins view.
+- Cursor: not set up by the script.

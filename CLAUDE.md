@@ -25,10 +25,10 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
 - `.claude-plugin/marketplace.json`: the registry (marketplace name `agentz`); `.github/plugin/marketplace.json` and `.cursor-plugin/marketplace.json` are generated copies
 - `plugins/<name>/`: one folder per plugin
   - `agentz-publisher` (replaces `plugin-creator`, mapped in marketplace `renames`): the four-phase publishing flow. Skills `analyse-request`, `research-catalog`, `build-plugin`, `validate-plugin`; agent `publisher`; commands `/new-plugin`; `scripts/scaffold.py`; `skills/research-catalog/scripts/search_catalog.py`
-  - `onboarding`: `/init` machine setup for users and contributors (skill `setup-machine`)
+  - `onboarding`: `/init` contributor machine setup: agentz-publisher, HVE Core, Python, Vally (skill `setup-machine`)
   - `bicep-avm-review`: reference example of the skill structure
 - `scripts/`: `sync_manifests.py`, `build_catalog.py`, `validate_repo.py`, `marketplace_lib.py` (needs PyYAML)
-- `docs/`: `plugin-standard.md`, `skill-authoring-standard.md`, `consuming-plugins.md`
+- `docs/`: `contributor-guide.md` (setup, the four phases, writing evals, the PR gate), `plugin-standard.md`, `skill-authoring-standard.md`, `consuming-plugins.md`
 - `.github/`: `workflows/validate.yml`, `CODEOWNERS`, `copilot-instructions.md`, `instructions/*.instructions.md` (Copilot PR review rules, split by path), PR template
 
 ## Publishing framework (Analyse, Research, Build, Validate)
@@ -36,7 +36,7 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
 - Analyse and Research are agentz's own (`agentz-publisher`); Build and Validate use HVE Core (`hve-builder`, `vally-tests`) when installed, with fallbacks when not. The gate never depends on HVE Core.
 - HVE Core integration is by host-extension instructions only: `.github/instructions/agentz-authoring.instructions.md` and `agentz-evals.instructions.md`. Don't copy HVE Core content into the repo.
 - Handoff notes live in `.agentz/<plugin>/` (git-ignored): `intent-brief.md`, `research.md`, `readiness-report.md`.
-- Machine setup is the `onboarding` plugin: `/init` runs skill `setup-machine`, which wraps `skills/setup-machine/scripts/setup.sh` / `setup.ps1` (`--role user|contributor`, `--plugins`, `--skip-hve`, `--hve-ref`, `--dry-run`). `/init` is also a built-in in Claude Code, so it may show as `/onboarding:init` there (untested). `.vscode/extensions.json` recommends the HVE Core extension (`ise-hve-essentials.hve-core`).
+- Machine setup is the `onboarding` plugin: `/init` runs skill `setup-machine`, which wraps `skills/setup-machine/scripts/setup.sh` / `setup.ps1` (`--skip-hve`, `--hve-ref`, `--dry-run`; contributors only). `/init` is also a built-in in Claude Code, so it may show as `/onboarding:init` there (untested). `.vscode/extensions.json` recommends the HVE Core extension (`ise-hve-essentials.hve-core`).
 
 ## The gate
 
