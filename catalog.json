@@ -60,21 +60,21 @@
     },
     {
       "name": "onboarding",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "description": "Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors",
       "category": "productivity",
       "owner": "Danidu Weerasinghe",
       "skills": [
         {
           "name": "setup-machine",
-          "description": "Set up this machine to use or contribute to the agentz marketplace. Adds the marketplace to VS Code, Copilot CLI and Claude Code, installs chosen plugins, and for contributors installs Python, Vally and HVE Core. Use when someone has just installed onboarding, asks to get started with agentz, or runs /init. Do not use to build a plugin (use agentz-publisher) or to configure unrelated tools."
+          "description": "Set up this machine to contribute plugins to the agentz marketplace. Installs agentz-publisher, HVE Core (hve-builder and vally-tests), Python with PyYAML and Vally for the evals. Use when someone wants to start contributing, has just installed onboarding, or runs /init. Do not use to install plugins for normal use, to build a plugin (use agentz-publisher) or to configure unrelated tools."
         }
       ],
       "agents": [],
       "commands": [
         {
           "name": "init",
-          "description": "Set up this machine for the agentz marketplace (add it to your clients, install plugins, prepare contributors)"
+          "description": "Set up this machine to contribute plugins to agentz (agentz-publisher, HVE Core, eval tooling)"
         }
       ]
     }
