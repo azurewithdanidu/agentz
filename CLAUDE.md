@@ -28,7 +28,7 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
   - `onboarding`: `/init` contributor machine setup: agentz-publisher, HVE Core, Python, Vally (skill `setup-machine`)
   - `bicep-avm-review`: reference example of the skill structure
 - `scripts/`: `sync_manifests.py`, `build_catalog.py`, `validate_repo.py`, `marketplace_lib.py` (needs PyYAML)
-- `docs/`: `plugin-standard.md`, `skill-authoring-standard.md`, `consuming-plugins.md`
+- `docs/`: `contributor-guide.md` (setup, the four phases, writing evals, the PR gate), `plugin-standard.md`, `skill-authoring-standard.md`, `consuming-plugins.md`
 - `.github/`: `workflows/validate.yml`, `CODEOWNERS`, `copilot-instructions.md`, `instructions/*.instructions.md` (Copilot PR review rules, split by path), PR template
 
 ## Publishing framework (Analyse, Research, Build, Validate)

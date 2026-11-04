@@ -29,6 +29,8 @@ Every IDE is covered in [docs/consuming-plugins.md](docs/consuming-plugins.md).
 
 ## Contribute
 
+The full walk-through, including how to write evals, is the [contributor guide](docs/contributor-guide.md). In short:
+
 1. Check [catalog.json](catalog.json) for an existing plugin that does the job. Extend it if there is one.
 2. Set up your machine: install the `onboarding` plugin and run `/init`. It installs PyYAML, Vally, HVE Core and `agentz-publisher`, and skips anything you don't have. Without the plugin, run `plugins/onboarding/skills/setup-machine/scripts/setup.sh` (or `setup.ps1` on Windows) from a clone.
 3. Run `/new-plugin <idea>` or select the **publisher** agent. It walks you through Analyse, Research, Build and Validate, using HVE Core's `hve-builder` and `vally-tests` when they're installed.
