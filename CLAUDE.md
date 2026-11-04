@@ -24,7 +24,8 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
 
 - `.claude-plugin/marketplace.json`: the registry (marketplace name `agentz`); `.github/plugin/marketplace.json` and `.cursor-plugin/marketplace.json` are generated copies
 - `plugins/<name>/`: one folder per plugin
-  - `agentz-publisher` (replaces `plugin-creator`, mapped in marketplace `renames`): the four-phase publishing flow. Skills `analyse-request`, `research-catalog`, `build-plugin`, `validate-plugin`; agent `publisher`; commands `/new-plugin`, `/agentz-init`; `scripts/scaffold.py`; `skills/research-catalog/scripts/search_catalog.py`
+  - `agentz-publisher` (replaces `plugin-creator`, mapped in marketplace `renames`): the four-phase publishing flow. Skills `analyse-request`, `research-catalog`, `build-plugin`, `validate-plugin`; agent `publisher`; commands `/new-plugin`; `scripts/scaffold.py`; `skills/research-catalog/scripts/search_catalog.py`
+  - `onboarding`: `/init` machine setup for users and contributors (skill `setup-machine`)
   - `bicep-avm-review`: reference example of the skill structure
 - `scripts/`: `sync_manifests.py`, `build_catalog.py`, `validate_repo.py`, `marketplace_lib.py` (needs PyYAML)
 - `docs/`: `plugin-standard.md`, `skill-authoring-standard.md`, `consuming-plugins.md`
@@ -35,7 +36,7 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
 - Analyse and Research are agentz's own (`agentz-publisher`); Build and Validate use HVE Core (`hve-builder`, `vally-tests`) when installed, with fallbacks when not. The gate never depends on HVE Core.
 - HVE Core integration is by host-extension instructions only: `.github/instructions/agentz-authoring.instructions.md` and `agentz-evals.instructions.md`. Don't copy HVE Core content into the repo.
 - Handoff notes live in `.agentz/<plugin>/` (git-ignored): `intent-brief.md`, `research.md`, `readiness-report.md`.
-- Contributor setup: `scripts/init.sh` / `scripts/init.ps1` (`--skip-hve`, `--hve-ref`, `--dry-run`), `.vscode/extensions.json` recommends the HVE Core extension (`ise-hve-essentials.hve-core`).
+- Machine setup is the `onboarding` plugin: `/init` runs skill `setup-machine`, which wraps `skills/setup-machine/scripts/setup.sh` / `setup.ps1` (`--role user|contributor`, `--plugins`, `--skip-hve`, `--hve-ref`, `--dry-run`). `/init` is also a built-in in Claude Code, so it may show as `/onboarding:init` there (untested). `.vscode/extensions.json` recommends the HVE Core extension (`ise-hve-essentials.hve-core`).
 
 ## The gate
 
@@ -51,6 +52,7 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
 - `chore/rename-to-agentz`: Contoso placeholders replaced with agentz values. Merge first.
 - `feat/agent-plugins-spec`: converts every plugin to Agent Plugins 1.0 with generated Claude/Cursor files. Merge second.
 - `feat/hve-publisher`: agentz-publisher (Analyse, Research, Build, Validate), HVE Core host-extension instructions, Vally evals and CI, contributor init. Merge third.
+- `feat/onboarding`: the `onboarding` plugin (moves machine setup out of `scripts/` and `agentz-publisher`). Merge fourth, after `feat/hve-publisher`.
 - `demo/iac-checker`: deliberately failing PR for the talk (too few evals, no version bump, duplicate of `bicep-avm-review`), rebuilt on top of `feat/hve-publisher`. Keep open.
 - `feature/iac-checker`: stale local branch from the first skeleton (Contoso names). Safe to delete.
 

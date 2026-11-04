@@ -25,7 +25,7 @@ Guides contributors from an idea to a published plugin in four phases. Start her
 | --- | --- | --- |
 | Skills | `analyse-request`, `research-catalog`, `build-plugin`, `validate-plugin` | Yes |
 | Agent | `publisher` | Copilot namespace; Claude copy generated |
-| Commands | `/new-plugin`, `/agentz-init` | Copilot namespace; Claude copy generated |
+| Commands | `/new-plugin` | Copilot namespace; Claude copy generated |
 | Scripts | `scripts/scaffold.py`, `skills/research-catalog/scripts/search_catalog.py` | Yes (Python 3.10+, standard library) |
 
 ## Install
@@ -34,7 +34,7 @@ Guides contributors from an idea to a published plugin in four phases. Start her
 /plugin install agentz-publisher --marketplace azurewithdanidu/agentz
 ```
 
-See [docs/consuming-plugins.md](../../docs/consuming-plugins.md) for other clients. To set up everything a contributor needs, run `/agentz-init` or `scripts/init.sh` from the repository root.
+See [docs/consuming-plugins.md](../../docs/consuming-plugins.md) for other clients. To set up everything a contributor needs, install the `onboarding` plugin and run `/init`.
 
 ## Usage
 

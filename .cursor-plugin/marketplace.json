@@ -19,6 +19,12 @@
       "source": "plugins/bicep-avm-review",
       "description": "Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report.",
       "category": "development"
+    },
+    {
+      "name": "onboarding",
+      "source": "plugins/onboarding",
+      "description": "Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors",
+      "category": "productivity"
     }
   ]
 }

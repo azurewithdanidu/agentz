@@ -3,7 +3,7 @@
   "plugins": [
     {
       "name": "agentz-publisher",
-      "version": "2.0.0",
+      "version": "2.1.0",
       "description": "Guides contributors through publishing to the agentz marketplace in four phases: Analyse the idea, Research the catalog for duplicates, Build with HVE Core, and Validate with evals before opening a pull request.",
       "category": "productivity",
       "owner": "Azure with Danidu",
@@ -33,10 +33,6 @@
       ],
       "commands": [
         {
-          "name": "agentz-init",
-          "description": "Set up this machine to contribute to the agentz marketplace (Python, Vally, HVE Core, agentz plugins)"
-        },
-        {
           "name": "new-plugin",
           "description": "Publish a new agent, skill or plugin to the agentz marketplace (Analyse, Research, Build, Validate)"
         }
@@ -61,6 +57,26 @@
         }
       ],
       "commands": []
+    },
+    {
+      "name": "onboarding",
+      "version": "0.1.0",
+      "description": "Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors",
+      "category": "productivity",
+      "owner": "Danidu Weerasinghe",
+      "skills": [
+        {
+          "name": "setup-machine",
+          "description": "Set up this machine to use or contribute to the agentz marketplace. Adds the marketplace to VS Code, Copilot CLI and Claude Code, installs chosen plugins, and for contributors installs Python, Vally and HVE Core. Use when someone has just installed onboarding, asks to get started with agentz, or runs /init. Do not use to build a plugin (use agentz-publisher) or to configure unrelated tools."
+        }
+      ],
+      "agents": [],
+      "commands": [
+        {
+          "name": "init",
+          "description": "Set up this machine for the agentz marketplace (add it to your clients, install plugins, prepare contributors)"
+        }
+      ]
     }
   ]
 }
