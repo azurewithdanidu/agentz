@@ -23,6 +23,12 @@
       "source": "./plugins/onboarding",
       "description": "Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors",
       "category": "productivity"
+    },
+    {
+      "name": "songwriting",
+      "source": "./plugins/songwriting",
+      "description": "Writes and revises original English song lyrics, with structured verses, memorable choruses, natural rhyme and singability feedback.",
+      "category": "productivity"
     }
   ],
   "renames": {
