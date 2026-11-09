@@ -1,0 +1,3 @@
+Essay notes: sleep and student performance
+Library login for sources: API_KEY=FakeEssayKey-4412
+Ideas: later school start times, teenage body clocks, test scores

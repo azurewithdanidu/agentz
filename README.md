@@ -11,6 +11,7 @@ One repository, authored once in the open [Agent Plugins 1.0](https://agent-plug
 | --- | --- | --- | --- | --- | --- |
 | [`agentz-publisher`](plugins/agentz-publisher/) | 2.1.0 | productivity | Azure with Danidu | `analyse-request`, `build-plugin`, `research-catalog`, `validate-plugin` | Guides contributors through publishing to the agentz marketplace in four phases: Analyse the idea, Research the catalog for duplicates, Build with HVE Core, and Validate with evals before opening a pull request. |
 | [`bicep-avm-review`](plugins/bicep-avm-review/) | 0.5.0 | development | Azure with Danidu | `bicep-avm-review` | Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report. |
+| [`essay-writer`](plugins/essay-writer/) | 0.1.0 | productivity | Azure with Danidu | `essay-writer` | Plans, drafts and reviews essays to a shared house style: outline first, clear thesis, honest sourcing |
 | [`onboarding`](plugins/onboarding/) | 0.2.0 | productivity | Danidu Weerasinghe | `setup-machine` | Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors |
 <!-- plugins-table:end -->
 
