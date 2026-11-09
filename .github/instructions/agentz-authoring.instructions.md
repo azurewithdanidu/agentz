@@ -1,5 +1,5 @@
 ---
-description: "agentz plugin authoring conventions for skills, agents, commands and manifests in the Agent Plugins 1.0 layout; applies when hve-builder or anyone creates or edits plugin files under plugins/."
+description: "agentz plugin authoring conventions for skills, agents, commands and manifests in the classic plugin layout; applies when hve-builder or anyone creates or edits plugin files under plugins/."
 applyTo: "plugins/**"
 ---
 
@@ -11,10 +11,11 @@ This repository is the agentz plugin marketplace. When creating or changing a sk
 
 - One plugin per folder: `plugins/<plugin-name>/`. Never write to `.github/agents/`, `.github/skills/` or `.github/prompts/` for plugin content.
 - Skills: `plugins/<plugin-name>/skills/<skill-name>/SKILL.md`, with `steps/`, `references/`, `templates/`, `scripts/` beside it. The skill folder name equals the frontmatter `name`.
-- Agents: `plugins/<plugin-name>/com.github.copilot/agents/<agent-name>.agent.md`.
-- Commands: `plugins/<plugin-name>/com.github.copilot/commands/<command-name>.md`.
-- MCP servers: `plugins/<plugin-name>/mcp.json` with `$schema` `https://agent-plugins.org/schemas/1.0.0/mcp.schema.json` and `type` `stdio` or `streamable-http`.
-- Never create or edit `agents/`, `commands/`, `.claude-plugin/`, `.cursor-plugin/` or `.mcp.json` inside a plugin. `scripts/sync_manifests.py` generates them.
+- Agents: `plugins/<plugin-name>/agents/<agent-name>.agent.md`.
+- Commands: `plugins/<plugin-name>/commands/<command-name>.md`.
+- MCP servers: `plugins/<plugin-name>/.mcp.json` with `type` `stdio` or `http`.
+- Never create or edit `.claude-plugin/`, `.cursor-plugin/` or `mcp.json` inside a plugin. `scripts/sync_manifests.py` generates them.
+- No `com.github.copilot/` folder and no Agent Plugins `$schema`.
 
 ## Skills carry the logic
 
@@ -24,8 +25,7 @@ This repository is the agentz plugin marketplace. When creating or changing a sk
 
 ## Agents
 
-- Frontmatter: `name` (equals the file name without `.agent.md`), `description`, `tools`.
-- `tools` may only use `read`, `search`, `edit`, `execute`, `web`, `todo`. These map to Claude Code tools; anything else fails CI.
+- Frontmatter: `name` (equals the file name without `.agent.md`) and `description`. No `tools`: Copilot and Claude Code use different tool names. State limits in the body.
 - Don't set `model:`; plugins run on whatever model the user chose.
 
 ## After any change

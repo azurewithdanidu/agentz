@@ -6,7 +6,7 @@ Guides contributors from an idea to a published plugin in four phases. Start her
 | --- | --- |
 | **Owner** | Azure with Danidu (`@azurewithdanidu`) |
 | **Status** | Stable (`2.x`); replaces `plugin-creator` |
-| **Format** | Agent Plugins 1.0 (Claude Code and Cursor files generated) |
+| **Format** | Classic plugin layout (Claude Code and Cursor manifests generated) |
 | **Platforms** | VS Code (Copilot), Copilot CLI, Claude Code, Cursor |
 | **Works with** | HVE Core (`hve-builder`, `vally-tests`), optional |
 
@@ -24,8 +24,8 @@ Guides contributors from an idea to a published plugin in four phases. Start her
 | Component | Name | Portable across clients |
 | --- | --- | --- |
 | Skills | `analyse-request`, `research-catalog`, `build-plugin`, `validate-plugin` | Yes |
-| Agent | `publisher` | Copilot namespace; Claude copy generated |
-| Commands | `/new-plugin` | Copilot namespace; Claude copy generated |
+| Agent | `publisher` | Copilot and Claude Code (one file) |
+| Commands | `/new-plugin` | Claude Code; Copilot to be confirmed |
 | Scripts | `scripts/scaffold.py`, `skills/research-catalog/scripts/search_catalog.py` | Yes (Python 3.10+, standard library) |
 
 ## Install

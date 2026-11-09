@@ -6,7 +6,7 @@ Sets up a machine to contribute plugins to the agentz marketplace: installs agen
 | --- | --- |
 | **Owner** | Danidu Weerasinghe (`@azurewithdanidu`) |
 | **Status** | Beta (`0.x`) |
-| **Format** | Agent Plugins 1.0 (Claude Code and Cursor files generated) |
+| **Format** | Classic plugin layout (Claude Code and Cursor manifests generated) |
 | **Platforms** | VS Code (Copilot), Copilot CLI, Claude Code |
 
 ## Install

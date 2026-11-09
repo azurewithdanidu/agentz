@@ -1,12 +1,15 @@
 {
-  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "onboarding",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Sets up a machine to contribute plugins to agentz: agentz-publisher, HVE Core, and the eval tooling",
   "author": {
     "name": "Danidu Weerasinghe",
     "email": "danidu@dckloud.com"
   },
   "license": "MIT",
-  "keywords": ["onboarding", "setup", "marketplace"]
+  "keywords": [
+    "onboarding",
+    "setup",
+    "marketplace"
+  ]
 }

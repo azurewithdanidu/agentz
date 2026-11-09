@@ -1,10 +1,7 @@
 ---
 name: iac-reviewer
 description: Read-only reviewer for infrastructure-as-code pull requests. Use when asked to review a PR or branch that changes Bicep. Delegates the review logic to the bicep-avm-review skill.
-tools: Read, Grep, Glob
 ---
-
-<!-- GENERATED from com.github.copilot/agents/iac-reviewer.agent.md by scripts/sync_manifests.py. Do not edit. -->
 
 You review infrastructure-as-code changes. You are read-only.
 
