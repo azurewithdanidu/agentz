@@ -3,7 +3,7 @@
   "plugins": [
     {
       "name": "agentz-publisher",
-      "version": "2.1.0",
+      "version": "2.2.0",
       "description": "Guides contributors through publishing to the agentz marketplace in four phases: Analyse the idea, Research the catalog for duplicates, Build with HVE Core, and Validate with evals before opening a pull request.",
       "category": "productivity",
       "owner": "Azure with Danidu",
@@ -14,7 +14,7 @@
         },
         {
           "name": "build-plugin",
-          "description": "Build a new agentz marketplace plugin from a confirmed intent brief, scaffolding the Agent Plugins 1.0 layout and authoring its skill, using HVE Core's hve-builder when it's installed. Use when the user says \"create a plugin\", \"new plugin\", \"scaffold a skill for the marketplace\", or after research-catalog returns a \"new\" verdict. This is phase 3 of 4 (Analyse, Research, Build, Validate). Do not use to edit an existing plugin's logic or to install plugins."
+          "description": "Build a new agentz marketplace plugin from a confirmed intent brief, scaffolding the classic plugin layout and authoring its skill, using HVE Core's hve-builder when it's installed. Use when the user says \"create a plugin\", \"new plugin\", \"scaffold a skill for the marketplace\", or after research-catalog returns a \"new\" verdict. This is phase 3 of 4 (Analyse, Research, Build, Validate). Do not use to edit an existing plugin's logic or to install plugins."
         },
         {
           "name": "research-catalog",
@@ -40,7 +40,7 @@
     },
     {
       "name": "bicep-avm-review",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "description": "Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report.",
       "category": "development",
       "owner": "Azure with Danidu",
@@ -60,7 +60,7 @@
     },
     {
       "name": "onboarding",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "description": "Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors",
       "category": "productivity",
       "owner": "Danidu Weerasinghe",

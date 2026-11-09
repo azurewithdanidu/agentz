@@ -1,6 +1,6 @@
 {
   "name": "bicep-avm-review",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report.",
   "author": {
     "name": "Azure with Danidu",

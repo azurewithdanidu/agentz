@@ -1,6 +1,8 @@
 # Plugin publishing standard
 
-Every plugin in this marketplace is authored in the open [Agent Plugins 1.0](https://agent-plugins.org) format, with VS Code and GitHub Copilot as the primary clients. Claude Code and Cursor don't read that format yet (Cursor only partly), so their files are generated from it.
+Every plugin in this marketplace uses the classic layout that VS Code (GitHub Copilot), Copilot CLI and Claude Code all read: a root `plugin.json`, `skills/`, `agents/`, `commands/` and `.mcp.json`. Each agent, command and skill exists once, so there is nothing to keep in sync by hand. Only the Claude Code and Cursor manifests are generated.
+
+agentz deliberately does not use the [Agent Plugins 1.0](https://agent-plugins.org) packaging format. It is an open standard worth knowing, but only the Copilot clients read it, and it keeps agents and commands in a `com.github.copilot/` folder that Claude Code ignores. That would mean two copies of every agent. See [Why the classic layout](#why-the-classic-layout).
 
 The easiest way to meet this standard is the `agentz-publisher` plugin, which walks you through four phases: Analyse, Research, Build and Validate. See [Building with HVE Core](#building-with-hve-core).
 
@@ -12,7 +14,7 @@ The easiest way to meet this standard is the `agentz-publisher` plugin, which wa
 | --- | --- | --- |
 | 1 | Folder at `plugins/<name>/`, registered in `.claude-plugin/marketplace.json` with `source: ./plugins/<name>` | CI |
 | 2 | Name is lowercase-hyphenated, 64 characters or fewer, and the same in folder, manifest and marketplace entry | CI |
-| 3 | Root `plugin.json` with the Agent Plugins `$schema`, name, semver version, description, and author name and email. No fields outside the spec | CI |
+| 3 | Root `plugin.json` with name, semver version, description, and author name and email. No `$schema` and no `extensions` (they switch Copilot to Agent Plugins rules) | CI |
 | 4 | Version bumped in `plugin.json` on every change (patch, minor or major) | CI (PRs) |
 | 5 | At least one skill at `skills/<name>/SKILL.md`, frontmatter `name` matching the folder | CI |
 | 6 | Skill description of 50 to 1,024 characters that says when to use it and when not to | CI and Copilot review |
@@ -21,8 +23,8 @@ The easiest way to meet this standard is the `agentz-publisher` plugin, which wa
 | 9 | `README.md` with owner, status, platforms and usage | CI (exists) and Copilot review (content) |
 | 10 | A CODEOWNERS line for `/plugins/<name>/` | CI |
 | 11 | No secrets, keys or tokens in any file | CI |
-| 12 | MCP servers in `mcp.json` with the Agent Plugins `$schema` and `type` of `stdio` or `streamable-http` | CI |
-| 13 | Agents named `<name>.agent.md` with `name`, `description` and only mapped `tools` | CI |
+| 12 | MCP servers in `.mcp.json` with `type` of `stdio` or `http` | CI |
+| 13 | Agents at `agents/<name>.agent.md` with `name` and `description`, and no `tools` list | CI |
 | 14 | Generated files up to date (see below) | CI |
 | 15 | No duplicate of an existing skill or agent, or a stated reason why it is different | CI warning, Copilot review, human approval |
 | 16 | Follows the [skill authoring standard](skill-authoring-standard.md) | Copilot review and human approval |
@@ -31,70 +33,63 @@ The easiest way to meet this standard is the `agentz-publisher` plugin, which wa
 
 ```text
 plugins/<name>/
-├── plugin.json                         # SOURCE: Agent Plugins 1.0 manifest
-├── mcp.json                            # SOURCE (optional): Agent Plugins MCP servers
+├── plugin.json                         # SOURCE: manifest (no $schema, no extensions)
+├── .mcp.json                           # SOURCE (optional): MCP servers
 ├── skills/<skill>/SKILL.md             # SOURCE: required; read as-is by every client
 │   ├── steps/                          #   ordered procedures
 │   ├── references/                     #   rules, mappings, schemas (one copy each)
 │   ├── templates/                      #   output formats
 │   └── scripts/                        #   deterministic checks
-├── com.github.copilot/                 # SOURCE (optional): Copilot-specific components
-│   ├── agents/<agent>.agent.md         #   custom agents
-│   ├── commands/<command>.md           #   slash commands
-│   └── hooks/hooks.json                #   hooks (avoid in shared plugins)
+├── agents/<agent>.agent.md             # SOURCE (optional): read by Copilot and Claude Code
+├── commands/<command>.md               # SOURCE (optional): slash commands
 ├── evals/eval.yaml                     # SOURCE: required; Vally evals, at least 10 stimuli
 ├── evals/fixtures/                     # SOURCE: small, fake input files for evals
 ├── README.md                           # SOURCE: required
 │
 ├── .claude-plugin/plugin.json          # GENERATED for Claude Code
-├── .mcp.json                           # GENERATED for Claude Code ("streamable-http" -> "http")
-├── agents/<agent>.md                   # GENERATED for Claude Code (tools mapped)
-├── commands/<command>.md               # GENERATED for Claude Code
-└── .cursor-plugin/plugin.json          # GENERATED for Cursor
+├── .cursor-plugin/plugin.json          # GENERATED for Cursor
+└── mcp.json                            # GENERATED for Cursor (copy of .mcp.json)
 ```
 
-Run `python3 scripts/sync_manifests.py` after any change. Generated files carry a "GENERATED ... Do not edit" note where the format allows one.
+Run `python3 scripts/sync_manifests.py` after any change.
 
 ## How each client reads a plugin
 
 | Client | Reads | Gets |
 | --- | --- | --- |
-| VS Code (Copilot) | Root `plugin.json` with the Agent Plugins `$schema` | Skills, MCP, and everything in `com.github.copilot/` |
-| Copilot CLI and the Copilot app | Root `plugin.json` (takes precedence over other manifests) | Skills, MCP, and everything in `com.github.copilot/` |
-| Claude Code | `.claude-plugin/plugin.json` (ignores the root manifest and the Copilot namespace) | Skills, `.mcp.json`, generated `agents/` and `commands/` |
-| Cursor | `.cursor-plugin/plugin.json` or the root `plugin.json` (precedence not documented) | At least skills and `mcp.json`. Agents and commands **to be confirmed** |
+| VS Code (Copilot), Copilot CLI, Copilot app | Root `plugin.json` | Skills, `agents/`, `commands/`, `.mcp.json` |
+| Claude Code | `.claude-plugin/plugin.json` (generated) | Skills, `agents/`, `commands/`, `.mcp.json` |
+| Cursor | `.cursor-plugin/plugin.json` (generated) | Skills and `mcp.json`. Agents and commands **to be confirmed** |
 
-## Agent tools mapping
+## Agents
 
-Copilot agents list tool sets. Claude agents are generated with the matching Claude tools:
+An agent file has to work in Copilot and in Claude Code, which use different tool names. So shared agents carry no `tools` list. Say what the agent must not do in its body (for example "You are read-only") and keep the logic in the skill.
 
-| Copilot tool set | Claude Code tools |
-| --- | --- |
-| `read` | `Read` |
-| `search` | `Grep`, `Glob` |
-| `edit` | `Edit`, `Write` |
-| `execute` | `Bash` |
-| `web` | `WebFetch`, `WebSearch` |
-| `todo` | `TodoWrite` |
+## Why the classic layout
 
-Any other tool name fails CI. Extend `COPILOT_TO_CLAUDE_TOOLS` in `scripts/marketplace_lib.py` if you need one.
+- One copy of each agent and command, readable by Copilot and Claude Code without generation.
+- The Agent Plugins format puts agents in `com.github.copilot/`. Claude Code ignores that folder, so every agent would need a second, generated copy that can drift.
+- A root `$schema` pointing at agent-plugins.org makes Copilot use Agent Plugins rules, which do not read a root `agents/` folder. That is why the gate forbids the `$schema`.
+- The open format is still useful to know. Skills and MCP servers are portable under it, and agentz keeps them in the same places.
 
 ## Portability
 
-| Component | Portable under Agent Plugins 1.0 | Guidance |
+| Component | Portable across clients | Guidance |
 | --- | --- | --- |
 | Skills | Yes | Put the logic here |
-| MCP servers | Yes | One `mcp.json`; Claude's copy is generated |
-| Agents | No (client namespace) | Keep thin; delegate to skills |
-| Commands | No (client namespace) | Keep thin |
-| Hooks | No (client namespace) | Avoid in shared plugins; not generated for Claude |
+| MCP servers | Yes | One `.mcp.json`; Cursor's copy is generated |
+| Agents | Copilot and Claude Code | Keep thin; delegate to skills; no `tools` list |
+| Commands | Claude Code; Copilot **to be confirmed** | Keep thin |
+| Hooks | No (formats differ) | Avoid in shared plugins |
 
 ## Not allowed
 
 - Hand-edited generated files.
-- `agents/`, `commands/` or `.claude-plugin/` written by hand. Author them under `com.github.copilot/` and generate.
+- `.claude-plugin/`, `.cursor-plugin/` or `mcp.json` written by hand. They are generated.
+- A `com.github.copilot/` folder, or the Agent Plugins `$schema` or `extensions` in `plugin.json`.
+- A `tools` list in a shared agent.
 - A top-level `bin/` folder. Claude org sync rejects the plugin. Use `scripts/`.
-- `hooks.json` at the plugin root, or a legacy `.plugin/` folder.
+- A legacy `.plugin/` folder.
 
 ## Versioning and lifecycle
 

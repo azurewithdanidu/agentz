@@ -57,15 +57,17 @@ Build refuses to start without a **new** verdict, and never invents an owner. If
 
 ### What you edit, and what is generated
 
-Plugins are written once, in the open Agent Plugins 1.0 format. VS Code and Copilot read it directly. Claude Code and Cursor read generated copies.
+Plugins use the classic layout that Copilot and Claude Code both read, so agents, commands and skills exist once. Only manifests are generated.
 
 | You edit (source) | Generated, never edit by hand |
 | --- | --- |
-| `plugin.json`, `mcp.json` | `.claude-plugin/plugin.json`, `.mcp.json`, `.cursor-plugin/plugin.json` |
+| `plugin.json`, `.mcp.json` | `.claude-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `mcp.json` (Cursor copy) |
 | `skills/<name>/SKILL.md` and its folders | |
-| `com.github.copilot/agents/*.agent.md`, `commands/*.md` | `agents/*.md`, `commands/*.md` (Claude copies) |
+| `agents/*.agent.md`, `commands/*.md` | |
 | `evals/eval.yaml`, `evals/fixtures/` | |
 | `README.md` | Root marketplace copies, `catalog.json`, the README plugins table |
+
+Shared agents have no `tools` list, because Copilot and Claude Code name tools differently. State limits in the agent body, and keep the logic in the skill.
 
 After any change, regenerate:
 
@@ -205,7 +207,7 @@ npx -y @microsoft/vally-cli@0.20.0 lint plugins --eval-spec plugins --strict
 
 | Layer | What it does | Blocks merge |
 | --- | --- | --- |
-| CI: `validate_repo.py` | Manifest and `mcp.json` schema, naming, version bump, eval minimums, agent tools, links, secrets, CODEOWNERS, generated files up to date | Yes |
+| CI: `validate_repo.py` | Manifest and `.mcp.json`, naming, version bump, eval minimums, agent frontmatter, links, secrets, CODEOWNERS, generated files up to date | Yes |
 | CI: `claude plugin validate` | Anthropic's validator on the generated Claude files | Yes |
 | CI: `vally lint` and `vally eval` | Eval files are well-formed, and (for changed plugins) pass | Yes |
 | CI: duplicate check | Warns when a new skill or agent looks too similar to an existing one | No, warns |
