@@ -25,6 +25,12 @@
       "source": "plugins/onboarding",
       "description": "Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors",
       "category": "productivity"
+    },
+    {
+      "name": "essay-writer",
+      "source": "plugins/essay-writer",
+      "description": "Plans, drafts and reviews essays to a shared house style: outline first, clear thesis, honest sourcing",
+      "category": "productivity"
     }
   ]
 }

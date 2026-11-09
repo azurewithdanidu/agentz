@@ -59,6 +59,26 @@
       "commands": []
     },
     {
+      "name": "essay-writer",
+      "version": "0.1.0",
+      "description": "Plans, drafts and reviews essays to a shared house style: outline first, clear thesis, honest sourcing",
+      "category": "productivity",
+      "owner": "Azure with Danidu",
+      "skills": [
+        {
+          "name": "essay-writer",
+          "description": "Plan, draft and review essays to a shared house style. Use when the user asks to \"write an essay\", \"outline an essay\", \"help me structure my argument\", \"improve my draft\", or \"review this essay\". Produces an outline for approval first, then a draft, or a findings report for an existing draft. Do not use for code, emails, cover letters, marketing copy, meeting summaries or fiction."
+        }
+      ],
+      "agents": [
+        {
+          "name": "essay-coach",
+          "description": "Writing coach for essays. Use when the user wants to plan, draft or review an essay. Delegates the method to the essay-writer skill."
+        }
+      ],
+      "commands": []
+    },
+    {
       "name": "onboarding",
       "version": "0.2.0",
       "description": "Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors",

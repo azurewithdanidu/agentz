@@ -1,0 +1,17 @@
+{
+  "name": "essay-writer",
+  "version": "0.1.0",
+  "description": "Plans, drafts and reviews essays to a shared house style: outline first, clear thesis, honest sourcing and plain language.",
+  "author": {
+    "name": "Azure with Danidu",
+    "email": "danidu@dckloud.com"
+  },
+  "repository": "https://github.com/azurewithdanidu/agentz",
+  "license": "MIT",
+  "keywords": [
+    "writing",
+    "essay",
+    "editing",
+    "style"
+  ]
+}
