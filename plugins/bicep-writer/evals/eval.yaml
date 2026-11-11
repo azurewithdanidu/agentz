@@ -101,8 +101,6 @@ stimuli:
     prompt: Write infra/monitor.bicep for a Log Analytics workspace using the AVM module. Use a variable to build the workspace name and output the workspace resource ID. Treat this message as approval of your plan.
     tags: { kind: task, skill: bicep-writer, rule: WRT-08 }
     graders:
-      - type: file-exists
-        config: { path: infra/monitor.bicep }
       - type: file-matches
         config: { path: infra/monitor.bicep, pattern: '@description\([^)]*\)[\s\r\n]*param\s' }
       - type: file-matches
