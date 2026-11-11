@@ -1,6 +1,6 @@
 {
   "name": "agentz-publisher",
-  "version": "2.0.0",
+  "version": "2.3.0",
   "description": "Guides contributors through publishing to the agentz marketplace in four phases: Analyse the idea, Research the catalog for duplicates, Build with HVE Core, and Validate with evals before opening a pull request.",
   "author": {
     "name": "Azure with Danidu",

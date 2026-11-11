@@ -3,7 +3,7 @@
   "plugins": [
     {
       "name": "agentz-publisher",
-      "version": "2.0.0",
+      "version": "2.3.0",
       "description": "Guides contributors through publishing to the agentz marketplace in four phases: Analyse the idea, Research the catalog for duplicates, Build with HVE Core, and Validate with evals before opening a pull request.",
       "category": "productivity",
       "owner": "Azure with Danidu",
@@ -14,7 +14,7 @@
         },
         {
           "name": "build-plugin",
-          "description": "Build a new agentz marketplace plugin from a confirmed intent brief, scaffolding the Agent Plugins 1.0 layout and authoring its skill, using HVE Core's hve-builder when it's installed. Use when the user says \"create a plugin\", \"new plugin\", \"scaffold a skill for the marketplace\", or after research-catalog returns a \"new\" verdict. This is phase 3 of 4 (Analyse, Research, Build, Validate). Do not use to edit an existing plugin's logic or to install plugins."
+          "description": "Build a new agentz marketplace plugin from a confirmed intent brief, scaffolding the classic plugin layout and authoring its skill, using HVE Core's hve-builder where it is supported, or the built-in checklist everywhere else. Use when the user says \"create a plugin\", \"new plugin\", \"scaffold a skill for the marketplace\", or after research-catalog returns a \"new\" verdict. This is phase 3 of 4 (Analyse, Research, Build, Validate). Do not use to edit an existing plugin's logic or to install plugins."
         },
         {
           "name": "research-catalog",
@@ -33,10 +33,6 @@
       ],
       "commands": [
         {
-          "name": "agentz-init",
-          "description": "Set up this machine to contribute to the agentz marketplace (Python, Vally, HVE Core, agentz plugins)"
-        },
-        {
           "name": "new-plugin",
           "description": "Publish a new agent, skill or plugin to the agentz marketplace (Analyse, Research, Build, Validate)"
         }
@@ -44,7 +40,7 @@
     },
     {
       "name": "bicep-avm-review",
-      "version": "0.5.0",
+      "version": "0.6.0",
       "description": "Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report.",
       "category": "development",
       "owner": "Azure with Danidu",
@@ -63,6 +59,21 @@
       "commands": []
     },
     {
+      "name": "bicep-writer",
+      "version": "0.1.1",
+      "description": "Writes new Azure Bicep templates composed from Azure Verified Modules (AVM), with pinned module versions, secure defaults and local compile checks.",
+      "category": "development",
+      "owner": "Azure with Danidu",
+      "skills": [
+        {
+          "name": "bicep-writer",
+          "description": "Write new Azure Bicep templates and .bicepparam files composed from Azure Verified Modules (AVM), with pinned module versions, secure defaults and a local compile check. Use when the user asks to \"write Bicep for\", \"create a Bicep template\", \"generate Azure IaC in Bicep\", or \"add an AVM module to this template\". Do not use for reviewing or auditing existing Bicep, for Terraform, Pulumi or raw ARM JSON authoring, or for deploying resources to Azure."
+        }
+      ],
+      "agents": [],
+      "commands": []
+    },
+    {
       "name": "iac-checker",
       "version": "0.1.0",
       "description": "Checks Bicep templates against infrastructure best practices",
@@ -76,6 +87,30 @@
       ],
       "agents": [],
       "commands": []
+    },
+    {
+      "name": "onboarding",
+      "version": "0.5.0",
+      "description": "Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors",
+      "category": "productivity",
+      "owner": "Danidu Weerasinghe",
+      "skills": [
+        {
+          "name": "contributor-conventions",
+          "description": "The agentz rules for creating or editing plugin content under plugins/ - folder layout, skill, agent and command conventions, Vally eval rules and the commands to run after a change. Use when someone creates or changes a skill, agent, command, manifest or eval in agentz, asks where a plugin file goes, how to write evals, or what the CI gate requires. Do not use to set up a machine (use setup-machine), to run the publishing flow (use agentz-publisher) or to install plugins for normal use."
+        },
+        {
+          "name": "setup-machine",
+          "description": "Set up this machine to contribute plugins to the agentz marketplace. Installs agentz-publisher, HVE Core as a plugin where the client supports it (hve-builder and vally-tests), Python with PyYAML and Vally for the evals. Use when someone wants to start contributing, has just installed onboarding, or runs /init. Do not use to install plugins for normal use, to build a plugin (use agentz-publisher) or to configure unrelated tools."
+        }
+      ],
+      "agents": [],
+      "commands": [
+        {
+          "name": "init",
+          "description": "Set up this machine to contribute plugins to agentz (agentz-publisher, HVE Core, eval tooling)"
+        }
+      ]
     }
   ]
 }

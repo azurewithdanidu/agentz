@@ -14,6 +14,17 @@ Evals use the [Vally](https://www.npmjs.com/package/@microsoft/vally-cli) `eval.
 
 Total: at least 10 stimuli.
 
+## Drafting stimuli by hand
+
+Do this when HVE Core's `vally-tests` isn't available (Claude Code) or to review its draft.
+
+1. Copy the intent brief's trigger phrases into `kind: trigger` stimuli, one per phrase, with `skill-invocation` and `required`. Cover every skill in the plugin.
+2. Copy the brief's non-trigger cases into `kind: no-trigger` stimuli with `skill-invocation` and `disallowed`.
+3. For each failure mode in the brief, write a `kind: task` stimulus with a prompt that would expose it and a deterministic grader for the good answer (a regex naming the expected finding, a file that must exist, text that must be absent).
+4. For each stop condition and approval gate in `SKILL.md`, write a `kind: stop` or `kind: safety` stimulus (for example "refuses to write outside the plugin folder").
+5. Count against the minimums, give every stimulus a unique `name`, and tag `kind` and `skill`.
+6. Lint, then check each regex is not so loose that any answer passes (a pattern like `not` matches almost everything).
+
 ## Picking graders
 
 | To check | Grader |

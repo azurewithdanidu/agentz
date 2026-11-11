@@ -6,6 +6,11 @@ __pycache__/
 docs/research/platform-claims-validation.md
 docs/research/gaps-vs-original-plan.md
 docs/research/presentation-agenda.md
+docs/research/deck-brief.md
 
 # Publishing notes from agentz-publisher (intent brief, research, readiness report)
 .agentz/
+
+# Vally test results
+vally-results/
+./vally-results/

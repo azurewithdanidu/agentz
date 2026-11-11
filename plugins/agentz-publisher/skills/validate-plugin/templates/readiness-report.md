@@ -15,7 +15,7 @@
 
 ## Gate checks
 
-- [ ] Manifest and `mcp.json` valid against Agent Plugins 1.0
+- [ ] Manifest and `.mcp.json` valid (no `$schema`, no `com.github.copilot/` folder)
 - [ ] Version bumped (existing plugins)
 - [ ] CODEOWNERS entry
 - [ ] At least 10 evals, triggers for every skill

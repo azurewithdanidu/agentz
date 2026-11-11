@@ -1,13 +1,15 @@
 <#
 .SYNOPSIS
-  Set up this machine to contribute to the agentz marketplace.
+  Set up this machine to contribute plugins to the agentz marketplace (Windows).
+  Installs agentz-publisher, HVE Core, Python with PyYAML and Vally (the eval tooling).
 .EXAMPLE
-  .\scripts\init.ps1                  # full setup
-  .\scripts\init.ps1 -SkipHve         # without HVE Core
-  .\scripts\init.ps1 -HveRef <ref>    # pin HVE Core to a tag or commit (default: main)
-  .\scripts\init.ps1 -DryRun          # show what would run
+  .\setup.ps1                  # full setup
+  .\setup.ps1 -SkipHve         # without HVE Core
+  .\setup.ps1 -HveRef <ref>    # pin HVE Core to a tag or commit (default: main)
+  .\setup.ps1 -DryRun          # show what would run, change nothing
 .NOTES
   Safe to re-run. Steps whose tool isn't installed are skipped and reported.
+  Run it from a clone of the agentz repository.
   Works in Windows PowerShell 5.1 and PowerShell 7+.
 #>
 [CmdletBinding()]
@@ -20,10 +22,8 @@ param(
 $MarketplaceRepo = "azurewithdanidu/agentz"
 $MarketplaceName = "agentz"
 $HveRepo         = "microsoft/hve-core"
-$HveExtension    = "ise-hve-essentials.hve-core"
 $VallyVersion    = "0.20.0"
 
-Set-Location (Split-Path -Parent $PSScriptRoot)
 $done = @(); $skipped = @(); $failed = @()
 
 function Invoke-Step([string]$Exe, [string[]]$ArgList) {
@@ -52,15 +52,20 @@ if (Test-Tool "npx") {
   else { $failed += "Vally: run 'npx -y @microsoft/vally-cli@$VallyVersion --version'" }
 } else { $skipped += "Node.js 20+ not found: evals can't be linted or run locally" }
 
+Write-Step "Clients found"
+$clients = @()
+if (Test-Tool "code") { $clients += "VS Code" }
+if (Test-Tool "copilot") { $clients += "Copilot CLI" }
+if (Test-Tool "claude") { $clients += "Claude Code" }
+if ($clients.Count -gt 0) { Write-Host "  $($clients -join ', ')" } else { Write-Host "  none on PATH" }
+
 Write-Step "VS Code"
 if (Test-Tool "code") {
   if (Invoke-Step "code" @("--install-extension", "github.copilot-chat")) { $done += "VS Code: GitHub Copilot Chat" }
-  if (-not $SkipHve) {
-    if (Invoke-Step "code" @("--install-extension", $HveExtension)) { $done += "VS Code: HVE Core extension" }
-    else { $failed += "VS Code: HVE Core extension install" }
-  }
-  $done += "VS Code: workspace settings add the $MarketplaceName marketplace (.vscode/settings.json)"
-} else { $skipped += "VS Code CLI 'code' not on PATH: open the repo in VS Code and accept the recommended extensions" }
+} else { $skipped += "VS Code CLI 'code' not on PATH: install GitHub Copilot Chat from the Extensions view" }
+# Editing the user's settings.json automatically is risky (comments, merges), so this stays manual.
+$skipped += "VS Code (manual): add `"$MarketplaceRepo`" to chat.plugins.marketplaces, then install agentz-publisher from the Plugins view"
+if (-not $SkipHve) { $skipped += "VS Code (manual): add `"$hveSpec`" to chat.plugins.marketplaces too, then install hve-core from the Plugins view" }
 
 Write-Step "GitHub Copilot CLI"
 if (Test-Tool "copilot") {
@@ -80,26 +85,26 @@ if (Test-Tool "claude") {
   [void](Invoke-Step "claude" @("plugin", "marketplace", "add", $MarketplaceRepo))
   if (Invoke-Step "claude" @("plugin", "install", "agentz-publisher@$MarketplaceName")) { $done += "Claude Code: agentz-publisher" }
   else { $failed += "Claude Code: agentz-publisher install" }
-  if (-not $SkipHve) { $skipped += "Claude Code: HVE Core isn't available for Claude Code; use VS Code or Copilot CLI for hve-builder and vally-tests" }
+  if (-not $SkipHve) { $skipped += "Claude Code: HVE Core not supported, using built-in fallbacks (authoring checklist, eval guide)" }
 } else { $skipped += "Claude Code not found" }
 
-Write-Step "Working folder for publishing notes"
-if (-not $DryRun) {
-  New-Item -ItemType Directory -Force -Path ".agentz" | Out-Null
-  if (-not (Select-String -Path ".gitignore" -Pattern '^\.agentz/$' -Quiet -ErrorAction SilentlyContinue)) {
-    Add-Content -Path ".gitignore" -Value ".agentz/"
+Write-Step "Repository clone"
+if (Test-Path "scripts/validate_repo.py") {
+  if (-not $DryRun) {
+    New-Item -ItemType Directory -Force -Path ".agentz" | Out-Null
+    if (-not (Select-String -Path ".gitignore" -Pattern '^\.agentz/$' -Quiet -ErrorAction SilentlyContinue)) {
+      Add-Content -Path ".gitignore" -Value ".agentz/"
+    }
   }
-}
-$done += ".agentz/ ready (git-ignored)"
-
-Write-Step "Checking the repository"
-if ($python) {
-  & $python -c "import yaml" *> $null
-  if ($LASTEXITCODE -eq 0) {
-    if (Invoke-Step $python @("scripts/validate_repo.py")) { $done += "Marketplace gate passes" }
-    else { $failed += "Marketplace gate: run '$python scripts/validate_repo.py' to see errors" }
+  $done += ".agentz/ ready (git-ignored)"
+  if ($python) {
+    & $python -c "import yaml" *> $null
+    if ($LASTEXITCODE -eq 0) {
+      if (Invoke-Step $python @("scripts/validate_repo.py")) { $done += "Marketplace gate passes" }
+      else { $failed += "Marketplace gate: run '$python scripts/validate_repo.py' to see errors" }
+    }
   }
-}
+} else { $skipped += "Not in an agentz clone: clone $MarketplaceRepo and re-run from its root to prepare .agentz/ and check the gate" }
 
 Write-Host ""; Write-Host "================ Summary"
 if ($DryRun) { Write-Host "  (dry run: nothing was changed; results show what would happen)" }

@@ -21,25 +21,16 @@ NAME_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$")
 SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?$")
 CATEGORIES = {"productivity", "development", "security", "observability"}
 
-# Agent Plugins 1.0 (https://agent-plugins.org) is the source format for every plugin.
-AP_PLUGIN_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
-AP_MCP_SCHEMA = "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json"
-AP_PLUGIN_FIELDS = {
-    "$schema", "name", "version", "description", "author", "homepage",
-    "repository", "license", "keywords", "extensions",
+# Plugins use the classic layout that VS Code, Copilot CLI and Claude Code all read:
+# root plugin.json (no Agent Plugins $schema), agents/, commands/, skills/, .mcp.json.
+PLUGIN_FIELDS = {
+    "name", "version", "description", "author", "homepage", "repository", "license", "keywords",
 }
-AP_MCP_TYPES = {"stdio", "streamable-http", "sse"}
-COPILOT_NS = "com.github.copilot"   # VS Code, Copilot CLI and the Copilot app read agents/commands/rules/hooks here
-
-# Copilot tool sets -> Claude Code tools, used to generate Claude agents from Copilot agents.
-COPILOT_TO_CLAUDE_TOOLS = {
-    "read": ["Read"],
-    "search": ["Grep", "Glob"],
-    "edit": ["Edit", "Write"],
-    "execute": ["Bash"],
-    "web": ["WebFetch", "WebSearch"],
-    "todo": ["TodoWrite"],
-}
+MCP_TYPES = {"stdio", "http", "sse"}
+# Declaring this $schema switches Copilot to Agent Plugins semantics, which look for agents in
+# com.github.copilot/ and ignore the root agents/ folder. Classic plugins must not declare it.
+AP_SCHEMA_HOST = "agent-plugins.org"
+COPILOT_NS = "com.github.copilot"   # not used in the classic layout; flagged if a plugin has it
 
 
 def load_json(path: Path) -> dict:

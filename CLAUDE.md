@@ -1,12 +1,12 @@
 # agentz
 
-Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`). One repo, authored once in the open **Agent Plugins 1.0** format (https://agent-plugins.org), consumed by VS Code (Copilot, primary), Copilot CLI, Claude Code and Cursor. It is also the live demo for a 1-hour talk on sharing agents and skills across an organisation without duplication, with proper quality gates.
+Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`). One repo using the classic plugin layout that Copilot and Claude Code both read (each skill, agent and command exists once), consumed by VS Code (Copilot, primary), Copilot CLI, Claude Code and Cursor. It is also the live demo for a 1-hour talk on sharing agents and skills across an organisation without duplication, with proper quality gates.
 
 ## Golden rules
 
-- Plugins are authored in Agent Plugins 1.0. Per plugin, edit only: root `plugin.json` (with the Agent Plugins `$schema`), `mcp.json`, `skills/`, `com.github.copilot/` (agents as `<name>.agent.md`, commands), `evals/`, `README.md`.
-- Never hand-edit generated files. Per plugin: `.claude-plugin/plugin.json`, `.mcp.json`, `agents/`, `commands/`, `.cursor-plugin/plugin.json`. At the root: `.github/plugin/marketplace.json`, `.cursor-plugin/marketplace.json`, `catalog.json`, and the plugins table in `README.md`.
-- The registry source is still `.claude-plugin/marketplace.json` (the spec defines no marketplace format, and Claude needs this file).
+- Plugins use the classic layout (not the Agent Plugins 1.0 format; see "Why classic" below). Per plugin, edit only: root `plugin.json` (no `$schema`, no `extensions`), `.mcp.json`, `skills/`, `agents/<name>.agent.md`, `commands/<name>.md`, `evals/`, `README.md`.
+- Never hand-edit generated files. Per plugin: `.claude-plugin/plugin.json`, `.cursor-plugin/plugin.json`, `mcp.json` (Cursor copy of `.mcp.json`). At the root: `.github/plugin/marketplace.json`, `.cursor-plugin/marketplace.json`, `catalog.json`, and the plugins table in `README.md`.
+- The registry source is `.claude-plugin/marketplace.json` (Claude needs this file; the Copilot and Cursor copies are generated).
 - After changing any manifest, skill, agent or command, run:
   ```bash
   python3 scripts/sync_manifests.py
@@ -14,32 +14,34 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
   python3 scripts/validate_repo.py            # add --base main for PR checks
   ```
 - Every change to a plugin needs a semver bump in its root `plugin.json`. CI fails otherwise.
-- Agent `tools` must use Copilot tool sets that map to Claude (`read`, `search`, `edit`, `execute`, `web`, `todo`); the mapping lives in `COPILOT_TO_CLAUDE_TOOLS` in `scripts/marketplace_lib.py`.
-- `mcp.json` uses `type: streamable-http` (or `stdio`); the generator converts it to Claude's `http`.
+- Shared agents have `name` and `description` only. No `tools` list: Copilot and Claude Code name tools differently. State limits (for example read-only) in the body.
+- `.mcp.json` uses `type: http` (or `stdio`).
+- Never add a `com.github.copilot/` folder or an Agent Plugins `$schema`: the `$schema` switches Copilot to rules that ignore the root `agents/` folder. CI fails on both.
 - Put logic in skills (the only component portable everywhere). Keep agents, commands and hooks thin.
-- No top-level `bin/` in a plugin (Claude org sync rejects it). Hooks go in `com.github.copilot/hooks/hooks.json` (avoid in shared plugins; not generated for Claude).
+- No top-level `bin/` in a plugin (Claude org sync rejects it). Avoid hooks in shared plugins; the formats differ between clients.
 - Write `source` paths as `./plugins/<name>`; folder name = plugin name = manifest name.
 
 ## Layout
 
 - `.claude-plugin/marketplace.json`: the registry (marketplace name `agentz`); `.github/plugin/marketplace.json` and `.cursor-plugin/marketplace.json` are generated copies
 - `plugins/<name>/`: one folder per plugin
-  - `agentz-publisher` (replaces `plugin-creator`, mapped in marketplace `renames`): the four-phase publishing flow. Skills `analyse-request`, `research-catalog`, `build-plugin`, `validate-plugin`; agent `publisher`; commands `/new-plugin`, `/agentz-init`; `scripts/scaffold.py`; `skills/research-catalog/scripts/search_catalog.py`
+  - `agentz-publisher` (replaces `plugin-creator`, mapped in marketplace `renames`): the four-phase publishing flow. Skills `analyse-request`, `research-catalog`, `build-plugin`, `validate-plugin`; agent `publisher`; commands `/new-plugin`; `scripts/scaffold.py`; `skills/research-catalog/scripts/search_catalog.py`
+  - `onboarding`: `/init` contributor machine setup: agentz-publisher, HVE Core, Python, Vally (skill `setup-machine`)
   - `bicep-avm-review`: reference example of the skill structure
 - `scripts/`: `sync_manifests.py`, `build_catalog.py`, `validate_repo.py`, `marketplace_lib.py` (needs PyYAML)
-- `docs/`: `plugin-standard.md`, `skill-authoring-standard.md`, `consuming-plugins.md`
+- `docs/`: `contributor-guide.md` (setup, the four phases, writing evals, the PR gate), `plugin-standard.md`, `skill-authoring-standard.md`, `consuming-plugins.md`
 - `.github/`: `workflows/validate.yml`, `CODEOWNERS`, `copilot-instructions.md`, `instructions/*.instructions.md` (Copilot PR review rules, split by path), PR template
 
 ## Publishing framework (Analyse, Research, Build, Validate)
 
 - Analyse and Research are agentz's own (`agentz-publisher`); Build and Validate use HVE Core (`hve-builder`, `vally-tests`) when installed, with fallbacks when not. The gate never depends on HVE Core.
-- HVE Core integration is by host-extension instructions only: `.github/instructions/agentz-authoring.instructions.md` and `agentz-evals.instructions.md`. Don't copy HVE Core content into the repo.
+- HVE Core integration is by host instructions only: `.github/instructions/agentz-authoring.instructions.md` and `agentz-evals.instructions.md` are thin pointers to `plugins/onboarding/skills/contributor-conventions/references/` (the single copy of the rules, read in every client). Don't copy HVE Core content into the repo. HVE Core is a plugin (Copilot CLI, VS Code), not supported in Claude Code: there `build-plugin` and `validate-plugin` use their built-in checklist and eval guide, which are first-class paths.
 - Handoff notes live in `.agentz/<plugin>/` (git-ignored): `intent-brief.md`, `research.md`, `readiness-report.md`.
-- Contributor setup: `scripts/init.sh` / `scripts/init.ps1` (`--skip-hve`, `--hve-ref`, `--dry-run`), `.vscode/extensions.json` recommends the HVE Core extension (`ise-hve-essentials.hve-core`).
+- Machine setup is the `onboarding` plugin: `/init` runs skill `setup-machine`, which wraps `skills/setup-machine/scripts/setup.sh` / `setup.ps1` (`--skip-hve`, `--hve-ref`, `--dry-run`; contributors only). `/init` is also a built-in in Claude Code, so it may show as `/onboarding:init` there (untested). `/init` detects the installed clients and sets up only those; in Claude Code it prints `skipped: HVE Core not supported, using built-in fallbacks`.
 
 ## The gate
 
-- CI (`validate_repo.py`) blocks on: Agent Plugins manifest and `mcp.json` schema, agent tool mapping, naming, version bump, Vally eval minimums (below), broken links, secrets, CODEOWNERS, stale generated files.
+- CI (`validate_repo.py`) blocks on: manifest (no Agent Plugins `$schema`/`extensions`, no `com.github.copilot/`), `.mcp.json`, agent frontmatter (no `tools`), naming, version bump, Vally eval minimums (below), broken links, secrets, CODEOWNERS, stale generated files.
 - CI (`claude plugin validate .`, pinned 2.1.317) runs Anthropic's validator.
 - CI `eval-lint` runs `vally lint plugins --eval-spec plugins --strict` (Vally 0.20.0, no model calls). CI `evals` runs `vally eval --require-pass` for changed plugins when the `COPILOT_GITHUB_TOKEN` secret exists, otherwise warns.
 - Eval minimums: 10+ stimuli, 3+ `skill-invocation` required (every skill covered), 2+ disallowed; fixtures must exist.
@@ -48,11 +50,17 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
 
 ## Branches
 
-- `chore/rename-to-agentz`: Contoso placeholders replaced with agentz values. Merge first.
-- `feat/agent-plugins-spec`: converts every plugin to Agent Plugins 1.0 with generated Claude/Cursor files. Merge second.
-- `feat/hve-publisher`: agentz-publisher (Analyse, Research, Build, Validate), HVE Core host-extension instructions, Vally evals and CI, contributor init. Merge third.
-- `demo/iac-checker`: deliberately failing PR for the talk (too few evals, no version bump, duplicate of `bicep-avm-review`), rebuilt on top of `feat/hve-publisher`. Keep open.
-- `feature/iac-checker`: stale local branch from the first skeleton (Contoso names). Safe to delete.
+- `main` has everything merged so far: the rename, the Agent Plugins conversion, the publisher and the onboarding plugin.
+- `fix/classic-layout`: moves every plugin from the Agent Plugins 1.0 layout back to the classic layout (one copy of each agent and command). Merge first.
+- `demo/iac-checker`: deliberately failing PR for the talk (too few evals, no version bump, duplicate of `bicep-avm-review`). Keep open; rebase onto `main` after `fix/classic-layout`.
+- `demo/essay-writer`: a passing PR for the talk. Rebase onto `main` after `fix/classic-layout` and convert to the classic layout.
+- Stale local branches (`feature/iac-checker`, `demo/iac-checker-old`) are safe to delete.
+
+## Why classic (not Agent Plugins 1.0)
+
+Agent Plugins 1.0 keeps agents and commands in `com.github.copilot/`, which only the Copilot clients read. Claude Code would need a generated second copy of every agent and command, which can drift. The classic layout (root `agents/`, `commands/`, `skills/`, `.mcp.json`) is read by Copilot and Claude Code directly. A root `$schema` pointing at agent-plugins.org switches Copilot to Agent Plugins rules, so it is forbidden. We still talk about the open format in the talk; skills and MCP servers are portable under both.
+
+Still to verify in real clients: Cursor loading `agents/` and `commands/`; Copilot loading `commands/` (it may want `prompts/`); one agent file working in both clients without a `tools` list.
 
 ## Verified platform facts (Nov 2026; recheck before slides)
 
