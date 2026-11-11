@@ -99,7 +99,7 @@
     },
     {
       "name": "songwriting",
-      "version": "0.2.0",
+      "version": "0.2.1",
       "description": "Writes and revises original English song lyrics, with structured verses, memorable choruses, natural rhyme and singability feedback.",
       "category": "productivity",
       "owner": "Azure with Danidu",
