@@ -25,6 +25,12 @@
       "category": "productivity"
     },
     {
+      "name": "bicep-writer",
+      "source": "./plugins/bicep-writer",
+      "description": "Writes new Azure Bicep templates composed from Azure Verified Modules (AVM), with pinned module versions, secure defaults and local compile checks.",
+      "category": "development"
+    },
+    {
       "name": "songwriting",
       "source": "./plugins/songwriting",
       "description": "Writes and revises original English song lyrics, with structured verses, memorable choruses, natural rhyme and singability feedback.",

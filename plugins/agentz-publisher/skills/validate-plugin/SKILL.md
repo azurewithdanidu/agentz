@@ -28,7 +28,7 @@ Opening the pull request changes an external system, so it needs the user's expl
 
 1. **Write the evals** in `plugins/<name>/evals/eval.yaml`, with fixtures in `plugins/<name>/evals/fixtures/`. Choose one:
    - **HVE Core installed:** run `vally-tests` in from-artifact mode with `files=plugins/<name>/skills/<skill>/SKILL.md`. The repository's `agentz-evals` instructions route it to the plugin's `eval.yaml`. Then remove any `advisory: true` tags it adds, after checking each case.
-   - **Without HVE Core:** write them following [references/eval-guide.md](references/eval-guide.md).
+   - **Without HVE Core (always the case in Claude Code):** draft them by hand following the "Drafting stimuli by hand" steps in [references/eval-guide.md](references/eval-guide.md). This is a supported path, not a degraded one.
 
    Either way, cover every case in the brief and meet the minimums in the guide.
 2. **Lint the evals** (no model calls):

@@ -31,10 +31,10 @@ Clone the repository, open it in your editor, and run `/init`. In Claude Code th
 | Python 3.10+ with PyYAML | The marketplace scripts (`validate_repo.py`, `sync_manifests.py`, `build_catalog.py`) |
 | Node.js 20+ and Vally 0.20.0 (via `npx`) | Lints and runs your evals |
 | `agentz-publisher` | The Analyse, Research, Build and Validate flow |
-| HVE Core (VS Code extension and Copilot CLI plugin) | Its `hve-builder` and `vally-tests` skills help with Build and Validate |
+| HVE Core (Copilot CLI plugin; VS Code plugin as a manual step; not supported in Claude Code) | Its `hve-builder` and `vally-tests` skills help with Build and Validate |
 | `.agentz/` folder | Git-ignored notes that pass work between the four phases |
 
-The script is safe to re-run. A tool that isn't installed is skipped and reported, not treated as an error. Pass `--skip-hve` (`-SkipHve` on Windows) to leave HVE Core out; the gate never depends on it. One step stays manual because editing your `settings.json` automatically is risky: add `"azurewithdanidu/agentz"` to the `chat.plugins.marketplaces` setting in VS Code.
+The script is safe to re-run. A tool that isn't installed is skipped and reported, not treated as an error. Pass `--skip-hve` (`-SkipHve` on Windows) to leave HVE Core out; the gate never depends on it. It checks which of VS Code, Copilot CLI and Claude Code you have and sets up only those. In Claude Code it reports `skipped: HVE Core not supported, using built-in fallbacks`; that is expected, not an error. One step stays manual because editing your `settings.json` automatically is risky: add `"azurewithdanidu/agentz"` (and `"microsoft/hve-core"` if you want HVE Core) to the `chat.plugins.marketplaces` setting in VS Code.
 
 You can also run the script directly, without the plugin:
 
@@ -50,7 +50,7 @@ bash plugins/onboarding/skills/setup-machine/scripts/setup.sh --dry-run
 | --- | --- | --- | --- |
 | Analyse | `analyse-request` | Turns your idea into an intent brief: the problem, what a user would type to trigger it, what should not trigger it, and how it could fail | `intent-brief.md` |
 | Research | `research-catalog` | Scores your idea against `catalog.json` and returns a verdict: **reuse**, **extend** or **new** | `research.md` |
-| Build | `build-plugin` | Scaffolds the plugin and writes the skill. Uses HVE Core's `hve-builder` when installed, otherwise a built-in checklist | The plugin folder |
+| Build | `build-plugin` | Scaffolds the plugin and writes the skill. Uses HVE Core's `hve-builder` where supported, otherwise the built-in authoring checklist | The plugin folder |
 | Validate | `validate-plugin` | Drafts evals, lints them, runs them, and writes a readiness report. Asks for your approval before opening a pull request | `readiness-report.md` |
 
 Build refuses to start without a **new** verdict, and never invents an owner. If Research says reuse or extend, you are pointed to the existing plugin and its owner instead. That is how the marketplace avoids duplicates.
@@ -80,7 +80,20 @@ Put the logic in skills, because they are the one component every client reads a
 
 ### How HVE Core fits in
 
-agentz reuses HVE Core instead of copying it. Two instruction files in `.github/instructions/` tell HVE Core's tools how agentz works: `agentz-authoring.instructions.md` keeps `hve-builder` inside the plugin layout, and `agentz-evals.instructions.md` sends `vally-tests` output to `plugins/<name>/evals/eval.yaml`. If HVE Core isn't installed, the built-in fallbacks run instead.
+agentz reuses HVE Core instead of copying it. Two instruction files in `.github/instructions/` tell HVE Core's tools how agentz works: `agentz-authoring.instructions.md` keeps `hve-builder` inside the plugin layout, and `agentz-evals.instructions.md` sends `vally-tests` output to `plugins/<name>/evals/eval.yaml`. The rules themselves live once, in the `contributor-conventions` skill of the `onboarding` plugin; the instruction files point to it. If HVE Core isn't installed, or you use Claude Code, the built-in fallbacks run instead: the authoring checklist in `build-plugin` and the eval guide in `validate-plugin`. They are supported paths and the gate checks the same things either way.
+
+### Client compatibility
+
+| Capability | VS Code (Copilot) | Copilot CLI | Claude Code | Cursor |
+| --- | --- | --- | --- | --- |
+| Install and use plugins (skills, agents, commands) | Yes | Yes | Yes | Skills and MCP; agents and commands unverified |
+| `agentz-publisher` flow (`/new-plugin`) | Yes | Yes | Yes | Not set up by `/init` |
+| `/init` (onboarding) | Yes | Yes | Yes, may appear as `/onboarding:init` | Not set up by `/init` |
+| HVE Core `hve-builder` and `vally-tests` | Needs HVE Core plugin (manual) | Needs HVE Core plugin (`/init` installs it) | Not supported: built-in checklist and eval guide | Not supported |
+| Vally lint and run | Yes (Node.js; run needs a Copilot sign-in) | Same | Lint yes; run needs a Copilot sign-in | Same |
+| Copilot code review on the PR | Yes | Yes | Yes (it runs on GitHub) | Yes |
+
+HVE Core is only needed for drafting help in Build and Validate. Nothing else depends on it, and CI never does.
 
 ## 3. Write the evals
 
@@ -176,7 +189,7 @@ A safety case from the same file checks that a secret in `prod.bicepparam` is re
 
 ### Drafting with HVE Core
 
-In the Validate phase, `vally-tests` (from HVE Core) can draft stimuli from your `SKILL.md`. Treat the result as a first draft. Check each prompt is realistic, each grader is checkable, and the totals meet the minimums above.
+In the Validate phase, `vally-tests` (from HVE Core, where supported) can draft stimuli from your `SKILL.md`; without it, follow "Drafting stimuli by hand" in the eval guide. Treat any draft as a first draft. Check each prompt is realistic, each grader is checkable, and the totals meet the minimums above.
 
 ### Running them
 

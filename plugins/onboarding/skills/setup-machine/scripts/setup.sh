@@ -14,7 +14,6 @@ set -uo pipefail
 MARKETPLACE_REPO="azurewithdanidu/agentz"
 MARKETPLACE_NAME="agentz"
 HVE_REPO="microsoft/hve-core"
-HVE_EXTENSION="ise-hve-essentials.hve-core"
 VALLY_VERSION="0.20.0"
 SKIP_HVE=0; HVE_REF=""; DRY_RUN=0
 
@@ -23,7 +22,7 @@ while [ $# -gt 0 ]; do
     --skip-hve) SKIP_HVE=1 ;;
     --hve-ref) HVE_REF="${2:?--hve-ref needs a value}"; shift ;;
     --dry-run) DRY_RUN=1 ;;
-    -h|--help) sed -n '2,10p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,12p' "$0"; exit 0 ;;
     *) echo "Unknown option: $1" >&2; exit 2 ;;
   esac
   shift
@@ -48,16 +47,20 @@ if have npx; then
   else FAILED+=("Vally: run 'npx -y @microsoft/vally-cli@$VALLY_VERSION --version'"); fi
 else SKIPPED+=("Node.js 20+ not found: evals can't be linted or run locally"); fi
 
+step "Clients found"
+CLIENTS=()
+have code && CLIENTS+=("VS Code")
+have copilot && CLIENTS+=("Copilot CLI")
+have claude && CLIENTS+=("Claude Code")
+if [ "${#CLIENTS[@]}" -gt 0 ]; then echo "  ${CLIENTS[*]}"; else echo "  none on PATH"; fi
+
 step "VS Code"
 if have code; then
   run code --install-extension github.copilot-chat >/dev/null && DONE+=("VS Code: GitHub Copilot Chat")
-  if [ "$SKIP_HVE" -eq 0 ]; then
-    if run code --install-extension "$HVE_EXTENSION" >/dev/null; then DONE+=("VS Code: HVE Core extension")
-    else FAILED+=("VS Code: HVE Core extension install"); fi
-  fi
-else SKIPPED+=("VS Code CLI 'code' not on PATH: install the HVE Core extension ($HVE_EXTENSION) from the Extensions view") ; fi
+else SKIPPED+=("VS Code CLI 'code' not on PATH: install GitHub Copilot Chat from the Extensions view"); fi
 # Editing the user's settings.json automatically is risky (comments, merges), so this stays manual.
 SKIPPED+=("VS Code (manual): add \"$MARKETPLACE_REPO\" to chat.plugins.marketplaces, then install agentz-publisher from the Plugins view")
+[ "$SKIP_HVE" -eq 0 ] && SKIPPED+=("VS Code (manual): add \"$hve_spec\" to chat.plugins.marketplaces too, then install hve-core from the Plugins view")
 
 step "GitHub Copilot CLI"
 if have copilot; then
@@ -76,7 +79,7 @@ if have claude; then
   run claude plugin marketplace add "$MARKETPLACE_REPO" || true
   if run claude plugin install "agentz-publisher@$MARKETPLACE_NAME"; then DONE+=("Claude Code: agentz-publisher")
   else FAILED+=("Claude Code: agentz-publisher install"); fi
-  [ "$SKIP_HVE" -eq 0 ] && SKIPPED+=("Claude Code: HVE Core isn't available for Claude Code; use VS Code or Copilot CLI for hve-builder and vally-tests")
+  [ "$SKIP_HVE" -eq 0 ] && SKIPPED+=("Claude Code: HVE Core not supported, using built-in fallbacks (authoring checklist, eval guide)")
 else SKIPPED+=("Claude Code not found"); fi
 
 step "Repository clone"

@@ -22,7 +22,6 @@ param(
 $MarketplaceRepo = "azurewithdanidu/agentz"
 $MarketplaceName = "agentz"
 $HveRepo         = "microsoft/hve-core"
-$HveExtension    = "ise-hve-essentials.hve-core"
 $VallyVersion    = "0.20.0"
 
 $done = @(); $skipped = @(); $failed = @()
@@ -53,16 +52,20 @@ if (Test-Tool "npx") {
   else { $failed += "Vally: run 'npx -y @microsoft/vally-cli@$VallyVersion --version'" }
 } else { $skipped += "Node.js 20+ not found: evals can't be linted or run locally" }
 
+Write-Step "Clients found"
+$clients = @()
+if (Test-Tool "code") { $clients += "VS Code" }
+if (Test-Tool "copilot") { $clients += "Copilot CLI" }
+if (Test-Tool "claude") { $clients += "Claude Code" }
+if ($clients.Count -gt 0) { Write-Host "  $($clients -join ', ')" } else { Write-Host "  none on PATH" }
+
 Write-Step "VS Code"
 if (Test-Tool "code") {
   if (Invoke-Step "code" @("--install-extension", "github.copilot-chat")) { $done += "VS Code: GitHub Copilot Chat" }
-  if (-not $SkipHve) {
-    if (Invoke-Step "code" @("--install-extension", $HveExtension)) { $done += "VS Code: HVE Core extension" }
-    else { $failed += "VS Code: HVE Core extension install" }
-  }
-} else { $skipped += "VS Code CLI 'code' not on PATH: install the HVE Core extension ($HveExtension) from the Extensions view" }
+} else { $skipped += "VS Code CLI 'code' not on PATH: install GitHub Copilot Chat from the Extensions view" }
 # Editing the user's settings.json automatically is risky (comments, merges), so this stays manual.
 $skipped += "VS Code (manual): add `"$MarketplaceRepo`" to chat.plugins.marketplaces, then install agentz-publisher from the Plugins view"
+if (-not $SkipHve) { $skipped += "VS Code (manual): add `"$hveSpec`" to chat.plugins.marketplaces too, then install hve-core from the Plugins view" }
 
 Write-Step "GitHub Copilot CLI"
 if (Test-Tool "copilot") {
@@ -82,7 +85,7 @@ if (Test-Tool "claude") {
   [void](Invoke-Step "claude" @("plugin", "marketplace", "add", $MarketplaceRepo))
   if (Invoke-Step "claude" @("plugin", "install", "agentz-publisher@$MarketplaceName")) { $done += "Claude Code: agentz-publisher" }
   else { $failed += "Claude Code: agentz-publisher install" }
-  if (-not $SkipHve) { $skipped += "Claude Code: HVE Core isn't available for Claude Code; use VS Code or Copilot CLI for hve-builder and vally-tests" }
+  if (-not $SkipHve) { $skipped += "Claude Code: HVE Core not supported, using built-in fallbacks (authoring checklist, eval guide)" }
 } else { $skipped += "Claude Code not found" }
 
 Write-Step "Repository clone"

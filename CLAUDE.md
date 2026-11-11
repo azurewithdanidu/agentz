@@ -35,9 +35,9 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
 ## Publishing framework (Analyse, Research, Build, Validate)
 
 - Analyse and Research are agentz's own (`agentz-publisher`); Build and Validate use HVE Core (`hve-builder`, `vally-tests`) when installed, with fallbacks when not. The gate never depends on HVE Core.
-- HVE Core integration is by host-extension instructions only: `.github/instructions/agentz-authoring.instructions.md` and `agentz-evals.instructions.md`. Don't copy HVE Core content into the repo.
+- HVE Core integration is by host instructions only: `.github/instructions/agentz-authoring.instructions.md` and `agentz-evals.instructions.md` are thin pointers to `plugins/onboarding/skills/contributor-conventions/references/` (the single copy of the rules, read in every client). Don't copy HVE Core content into the repo. HVE Core is a plugin (Copilot CLI, VS Code), not supported in Claude Code: there `build-plugin` and `validate-plugin` use their built-in checklist and eval guide, which are first-class paths.
 - Handoff notes live in `.agentz/<plugin>/` (git-ignored): `intent-brief.md`, `research.md`, `readiness-report.md`.
-- Machine setup is the `onboarding` plugin: `/init` runs skill `setup-machine`, which wraps `skills/setup-machine/scripts/setup.sh` / `setup.ps1` (`--skip-hve`, `--hve-ref`, `--dry-run`; contributors only). `/init` is also a built-in in Claude Code, so it may show as `/onboarding:init` there (untested). `.vscode/extensions.json` recommends the HVE Core extension (`ise-hve-essentials.hve-core`).
+- Machine setup is the `onboarding` plugin: `/init` runs skill `setup-machine`, which wraps `skills/setup-machine/scripts/setup.sh` / `setup.ps1` (`--skip-hve`, `--hve-ref`, `--dry-run`; contributors only). `/init` is also a built-in in Claude Code, so it may show as `/onboarding:init` there (untested). `/init` detects the installed clients and sets up only those; in Claude Code it prints `skipped: HVE Core not supported, using built-in fallbacks`.
 
 ## The gate
 
