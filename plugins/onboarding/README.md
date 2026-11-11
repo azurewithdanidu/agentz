@@ -39,4 +39,6 @@ bash skills/setup-machine/scripts/setup.sh --dry-run
 .\skills\setup-machine\scripts\setup.ps1 -DryRun
 ```
 
+The `contributor-conventions` skill holds the agentz authoring and eval rules (where files go, skill and agent rules, eval minimums), so they apply in every client rather than only where `.github/instructions/` is read. It starts when you create or change plugin content or ask what the gate requires.
+
 See [what each role installs](skills/setup-machine/references/what-it-installs.md).

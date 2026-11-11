@@ -25,6 +25,12 @@
       "source": "plugins/onboarding",
       "description": "Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors",
       "category": "productivity"
+    },
+    {
+      "name": "bicep-writer",
+      "source": "plugins/bicep-writer",
+      "description": "Writes new Azure Bicep templates composed from Azure Verified Modules (AVM), with pinned module versions, secure defaults and local compile checks.",
+      "category": "development"
     }
   ]
 }

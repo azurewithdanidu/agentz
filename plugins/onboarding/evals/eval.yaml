@@ -10,6 +10,7 @@ defaults:
 agent_environment:
   skills:
     - ../skills/setup-machine
+    - ../skills/contributor-conventions
 scoring:
   threshold: 0.7
 stimuli:
@@ -42,7 +43,35 @@ stimuli:
       - type: skill-invocation
         config: { required: [setup-machine] }
 
+  - name: trigger-conventions-where
+    prompt: Where does a new agent file go in an agentz plugin, and what frontmatter does it need?
+    tags: { kind: trigger, skill: contributor-conventions }
+    graders:
+      - type: skill-invocation
+        config: { required: [contributor-conventions] }
+
+  - name: trigger-conventions-evals
+    prompt: What are the minimum eval requirements for an agentz plugin before CI passes?
+    tags: { kind: trigger, skill: contributor-conventions }
+    graders:
+      - type: skill-invocation
+        config: { required: [contributor-conventions] }
+
+  - name: task-conventions-no-tools
+    prompt: I'm adding an agent to an agentz plugin. Can I list its tools in the frontmatter?
+    tags: { kind: task, skill: contributor-conventions }
+    graders:
+      - type: output-matches
+        config: { pattern: "(?i)(no .?tools|don.t|do not|not)" }
+
   # Should not trigger
+  - name: no-trigger-conventions-machine-setup
+    prompt: Install the tools I need on this laptop.
+    tags: { kind: no-trigger }
+    graders:
+      - type: skill-invocation
+        config: { disallowed: [contributor-conventions] }
+
   - name: no-trigger-build-plugin
     prompt: I want to build a new skill and publish it to agentz. Where do I start?
     tags: { kind: no-trigger }

@@ -1,0 +1,18 @@
+{
+  "name": "bicep-writer",
+  "version": "0.1.0",
+  "description": "Writes new Azure Bicep templates composed from Azure Verified Modules (AVM), with pinned module versions, secure defaults and local compile checks.",
+  "author": {
+    "name": "Azure with Danidu",
+    "email": "danidu@dckloud.com"
+  },
+  "repository": "https://github.com/azurewithdanidu/agentz",
+  "license": "MIT",
+  "keywords": [
+    "azure",
+    "bicep",
+    "avm",
+    "iac",
+    "authoring"
+  ]
+}
