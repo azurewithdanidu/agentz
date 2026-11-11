@@ -1,0 +1,22 @@
+# Vally evals for iac-checker. At least 10 stimuli are required: 3+ should-trigger
+# (one per skill), 2+ should-not-trigger, and task cases for real failure modes.
+# See plugins/agentz-publisher/skills/validate-plugin/references/eval-guide.md
+name: iac-checker
+description: Evals for the iac-checker plugin.
+type: capability
+defaults:
+  executor: copilot-sdk
+  runs: 3
+  timeout: 3m
+agent_environment:
+  skills:
+    - ../skills/bicep-template-check
+scoring:
+  threshold: 0.7
+stimuli:
+  - name: trigger-example
+    prompt: "TODO: a prompt that should trigger bicep-template-check"
+    tags: { kind: trigger, skill: bicep-template-check }
+    graders:
+      - type: skill-invocation
+        config: { required: [bicep-template-check] }

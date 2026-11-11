@@ -9,5 +9,6 @@
 # Each plugin is owned by the team that publishes it. Use a GitHub team (@org/team) when the repo lives in an organisation.
 /plugins/agentz-publisher/ @azurewithdanidu
 /plugins/bicep-avm-review/ @azurewithdanidu
+/plugins/iac-checker/ @azurewithdanidu
 /plugins/onboarding/ @azurewithdanidu
 /plugins/bicep-writer/ @azurewithdanidu

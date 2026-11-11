@@ -1,0 +1,11 @@
+{
+  "name": "iac-checker",
+  "version": "0.1.0",
+  "description": "Checks Bicep templates against infrastructure best practices",
+  "author": {
+    "name": "Danidu Weerasinghe",
+    "email": "danidu@dckloud.com"
+  },
+  "license": "MIT",
+  "keywords": []
+}

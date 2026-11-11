@@ -21,6 +21,12 @@
       "category": "development"
     },
     {
+      "name": "iac-checker",
+      "source": "plugins/iac-checker",
+      "description": "Checks Bicep templates against infrastructure best practices",
+      "category": "development"
+    },
+    {
       "name": "onboarding",
       "source": "plugins/onboarding",
       "description": "Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors",
