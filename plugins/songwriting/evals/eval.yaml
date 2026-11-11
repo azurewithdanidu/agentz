@@ -81,7 +81,7 @@ stimuli:
     tags: { kind: task, skill: english-songwriting }
     graders:
       - type: output-matches
-        config: { pattern: '(?m)^\[Chorus\]\r?\n(?:[^\r\n]+\r?\n){3}[^\r\n]+\s*$' }
+        config: { pattern: '^\[Chorus\]\r?\n(?:[^\r\n]+\r?\n){3}[^\r\n]+\s*$' }
       - type: output-not-contains
         config: { substring: "[Verse" }
       - type: diff-empty
