@@ -109,4 +109,4 @@ An agent file has to work in Copilot and in Claude Code, which use different too
 
 Two instruction files make HVE Core work inside agentz without changing it: `.github/instructions/agentz-authoring.instructions.md` keeps `hve-builder` in the plugin layout, and `.github/instructions/agentz-evals.instructions.md` routes `vally-tests` output to `plugins/<name>/evals/eval.yaml`.
 
-Set up a machine with the `onboarding` plugin: install it and run `/init`. The script behind it is `plugins/onboarding/skills/setup-machine/scripts/setup.sh` (macOS, Linux, WSL) or `setup.ps1` (Windows). Opening the repository in VS Code also recommends the HVE Core extension.
+Set up a machine with the `onboarding` plugin: install it and run `/init`. The script behind it is `plugins/onboarding/skills/setup-machine/scripts/setup.sh` (macOS, Linux, WSL) or `setup.ps1` (Windows). HVE Core is a plugin: `/init` installs it for Copilot CLI and prints the manual VS Code step; in Claude Code it is reported as skipped and the built-in fallbacks are used.

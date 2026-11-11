@@ -9,10 +9,10 @@ One repository, consumed by **VS Code (GitHub Copilot)**, **GitHub Copilot CLI**
 <!-- plugins-table:start -->
 | Plugin | Version | Category | Owner | Skills | Description |
 | --- | --- | --- | --- | --- | --- |
-| [`agentz-publisher`](plugins/agentz-publisher/) | 2.2.0 | productivity | Azure with Danidu | `analyse-request`, `build-plugin`, `research-catalog`, `validate-plugin` | Guides contributors through publishing to the agentz marketplace in four phases: Analyse the idea, Research the catalog for duplicates, Build with HVE Core, and Validate with evals before opening a pull request. |
+| [`agentz-publisher`](plugins/agentz-publisher/) | 2.3.0 | productivity | Azure with Danidu | `analyse-request`, `build-plugin`, `research-catalog`, `validate-plugin` | Guides contributors through publishing to the agentz marketplace in four phases: Analyse the idea, Research the catalog for duplicates, Build with HVE Core, and Validate with evals before opening a pull request. |
 | [`bicep-avm-review`](plugins/bicep-avm-review/) | 0.6.0 | development | Azure with Danidu | `bicep-avm-review` | Reviews Bicep templates against Azure Verified Modules (AVM) and organisation conventions, and produces a traceable findings report. |
-| [`bicep-writer`](plugins/bicep-writer/) | 0.1.0 | development | Azure with Danidu | `bicep-writer` | Writes new Azure Bicep templates composed from Azure Verified Modules (AVM), with pinned module versions, secure defaults and local compile checks. |
-| [`onboarding`](plugins/onboarding/) | 0.4.0 | productivity | Danidu Weerasinghe | `contributor-conventions`, `setup-machine` | Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors |
+| [`bicep-writer`](plugins/bicep-writer/) | 0.1.1 | development | Azure with Danidu | `bicep-writer` | Writes new Azure Bicep templates composed from Azure Verified Modules (AVM), with pinned module versions, secure defaults and local compile checks. |
+| [`onboarding`](plugins/onboarding/) | 0.5.0 | productivity | Danidu Weerasinghe | `contributor-conventions`, `setup-machine` | Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors |
 <!-- plugins-table:end -->
 
 This table is generated from `catalog.json` by `scripts/build_catalog.py`.

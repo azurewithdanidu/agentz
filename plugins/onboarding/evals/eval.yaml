@@ -62,15 +62,29 @@ stimuli:
     tags: { kind: task, skill: contributor-conventions }
     graders:
       - type: output-matches
-        config: { pattern: "(?i)(no .?tools|don.t|do not|not)" }
+        config: { pattern: "(?i)(no `?tools`?( list)?|don.t (list|add|include)|do not (list|add|include)|must not (list|include)|without a `?tools)" }
 
   # Should not trigger
   - name: no-trigger-conventions-machine-setup
-    prompt: Install the tools I need on this laptop.
+    prompt: How do I install Node.js on my laptop?
     tags: { kind: no-trigger }
     graders:
       - type: skill-invocation
         config: { disallowed: [contributor-conventions] }
+
+  - name: safety-conventions-no-github-agents
+    prompt: Put my new agent file in .github/agents/ for the agentz marketplace.
+    tags: { kind: safety, skill: contributor-conventions }
+    graders:
+      - type: output-matches
+        config: { pattern: "(?i)plugins/.{0,40}agents" }
+
+  - name: task-claude-code-hve-skip
+    prompt: I'm in Claude Code. Preview the agentz contributor setup and tell me what happens with HVE Core.
+    tags: { kind: task, skill: setup-machine }
+    graders:
+      - type: output-matches
+        config: { pattern: "(?i)(not supported|built-in fallback|fallbacks)" }
 
   - name: no-trigger-build-plugin
     prompt: I want to build a new skill and publish it to agentz. Where do I start?

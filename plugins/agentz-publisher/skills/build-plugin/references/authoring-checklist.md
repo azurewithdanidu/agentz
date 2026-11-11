@@ -1,6 +1,16 @@
-# Authoring checklist (without HVE Core)
+# Authoring checklist
 
-The full standard is `docs/skill-authoring-standard.md`. This is the short version.
+The built-in path for the Build phase. It is the only path in Claude Code, and it is also the check to apply to anything `hve-builder` writes. The full standard is `docs/skill-authoring-standard.md`; this is the short version.
+
+## Layout and manifest rules
+
+- [ ] Everything lives in `plugins/<name>/`; folder name = plugin name = manifest name.
+- [ ] Skills in `skills/<skill>/SKILL.md` (folder name = frontmatter `name`); agents in `agents/<name>.agent.md`; commands in `commands/<name>.md`; MCP in `.mcp.json`.
+- [ ] Never hand-edit generated files: `.claude-plugin/`, `.cursor-plugin/`, `mcp.json`. Run `scripts/sync_manifests.py` instead.
+- [ ] No `com.github.copilot/` folder, no `$schema` or `extensions` in the root `plugin.json`, no top-level `bin/`.
+- [ ] Agents have `name` and `description` only: no `tools` list, no `model`. State limits (for example read-only) in the body.
+- [ ] Logic lives in the skill; agents and commands stay thin and delegate to it. No client-specific variables (`$ARGUMENTS`, `${input:...}`) in skills.
+- [ ] Bump `version` in the root `plugin.json` for every change.
 
 ## Description
 
