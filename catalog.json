@@ -75,14 +75,14 @@
     },
     {
       "name": "cloud-avengers",
-      "version": "1.4.0",
-      "description": "AI-assisted AWS to Azure migration factory. Provides 10 specialist agents and 22 skills that orchestrate the full migration pipeline: AWS discovery → Azure architecture design → IaC transformation → code refactor → CI/CD pipeline build → deployment → validation.",
+      "version": "1.6.0",
+      "description": "AI-assisted AWS to Azure migration factory focused on Python serverless workloads and CloudFormation. Provides 10 specialist agents and 22 skills for AWS discovery → Azure architecture design → IaC transformation → code refactor → CI/CD pipeline build → deployment → validation.",
       "category": "development",
       "owner": "azurewithdanidu",
       "skills": [],
       "agents": [],
       "commands": [],
-      "source": "github:azurewithdanidu/cloud-avengers@6217f1d9e20a8738f2eb242f70cdf2fe320b9374"
+      "source": "github:azurewithdanidu/cloud-avengers@8f497eb18931237a10e51034fefeb85e4d2fa81e"
     },
     {
       "name": "onboarding",
