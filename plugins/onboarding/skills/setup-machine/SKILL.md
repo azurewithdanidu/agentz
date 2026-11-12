@@ -1,6 +1,6 @@
 ---
 name: setup-machine
-description: Set up this machine to contribute plugins to the agentz marketplace. Installs agentz-publisher, HVE Core as a plugin where the client supports it (hve-builder and vally-tests), Python with PyYAML and Vally for the evals. Use when someone wants to start contributing, has just installed onboarding, or runs /init. Do not use to install plugins for normal use, to build a plugin (use agentz-publisher) or to configure unrelated tools.
+description: Set up this machine to contribute plugins to the agentz marketplace. Installs agentz-publisher, HVE Core as a plugin where supported, Python with PyYAML and Vally for evals. Use when someone wants contributor machine setup or has just installed onboarding. Do not use for automatic source-repository sync (use sync-marketplace), plugin use, or unrelated tools.
 ---
 
 # Set up a machine for plugin contributions

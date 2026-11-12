@@ -17,6 +17,7 @@ from marketplace_lib import (
     CLAUDE_MARKETPLACE,
     README,
     dump_json,
+    is_linked,
     load_json,
     plugin_dir,
     read_frontmatter,
@@ -50,7 +51,7 @@ def build_catalog() -> dict:
             fm = read_frontmatter(cmd_md) or {}
             commands.append({"name": cmd_md.stem, "description": fm.get("description", "")})
 
-        plugins.append({
+        plugin = {
             "name": entry["name"],
             "version": manifest.get("version", ""),
             "description": entry.get("description") or manifest.get("description", ""),
@@ -59,7 +60,11 @@ def build_catalog() -> dict:
             "skills": skills,
             "agents": agents,
             "commands": commands,
-        })
+        }
+        if is_linked(entry):
+            src = entry["source"]
+            plugin["source"] = f"github:{src.get('repo', '')}@{src.get('sha', '')}"
+        plugins.append(plugin)
     return {"marketplace": market["name"], "plugins": plugins}
 
 
@@ -70,6 +75,9 @@ def render_table(catalog: dict) -> str:
     ]
     for p in catalog["plugins"]:
         skills = ", ".join(f"`{s['name']}`" for s in p["skills"]) or "none"
+        if "source" in p:
+            repo = p["source"].removeprefix("github:").split("@")[0]
+            skills = f"linked from [{repo}](https://github.com/{repo})"
         rows.append(
             f"| [`{p['name']}`](plugins/{p['name']}/) | {p['version']} | {p['category']} "
             f"| {p['owner']} | {skills} | {p['description']} |"

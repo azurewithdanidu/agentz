@@ -74,9 +74,20 @@
       "commands": []
     },
     {
+      "name": "cloud-avengers",
+      "version": "1.4.0",
+      "description": "AI-assisted AWS to Azure migration factory. Provides 10 specialist agents and 22 skills that orchestrate the full migration pipeline: AWS discovery → Azure architecture design → IaC transformation → code refactor → CI/CD pipeline build → deployment → validation.",
+      "category": "development",
+      "owner": "azurewithdanidu",
+      "skills": [],
+      "agents": [],
+      "commands": [],
+      "source": "github:azurewithdanidu/cloud-avengers@6217f1d9e20a8738f2eb242f70cdf2fe320b9374"
+    },
+    {
       "name": "onboarding",
-      "version": "0.5.0",
-      "description": "Sets up a machine for the agentz marketplace: adds it to every installed client, installs plugins, and prepares contributors",
+      "version": "0.6.0",
+      "description": "Sets up marketplace contributors, and publishes plugin repos to the marketplace through pull requests",
       "category": "productivity",
       "owner": "Danidu Weerasinghe",
       "skills": [
@@ -86,14 +97,18 @@
         },
         {
           "name": "setup-machine",
-          "description": "Set up this machine to contribute plugins to the agentz marketplace. Installs agentz-publisher, HVE Core as a plugin where the client supports it (hve-builder and vally-tests), Python with PyYAML and Vally for the evals. Use when someone wants to start contributing, has just installed onboarding, or runs /init. Do not use to install plugins for normal use, to build a plugin (use agentz-publisher) or to configure unrelated tools."
+          "description": "Set up this machine to contribute plugins to the agentz marketplace. Installs agentz-publisher, HVE Core as a plugin where supported, Python with PyYAML and Vally for evals. Use when someone wants contributor machine setup or has just installed onboarding. Do not use for automatic source-repository sync (use sync-marketplace), plugin use, or unrelated tools."
+        },
+        {
+          "name": "sync-marketplace",
+          "description": "Add a GitHub Actions workflow to a source repo that already contains a plugin, so each new plugin version is published to the agentz marketplace as a linked plugin through a draft pull request. Use when someone asks to sync, publish or keep a plugin from their own repo up to date in the marketplace. Do not use for ordinary machine setup, installing plugins, building a new plugin from loose artifacts, or reviewing a pull request."
         }
       ],
       "agents": [],
       "commands": [
         {
           "name": "init",
-          "description": "Set up this machine to contribute plugins to agentz (agentz-publisher, HVE Core, eval tooling)"
+          "description": "Set up marketplace contribution tools, or set up a plugin repo to publish to the marketplace"
         }
       ]
     },

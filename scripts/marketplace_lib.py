@@ -20,6 +20,10 @@ CODEOWNERS = ROOT / ".github" / "CODEOWNERS"
 NAME_RE = re.compile(r"^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$")
 SEMVER_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?$")
 CATEGORIES = {"productivity", "development", "security", "observability"}
+GITHUB_REPO_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9-]{0,38}/[A-Za-z0-9_.-]{1,100}$")
+COMMIT_SHA_RE = re.compile(r"^[0-9a-f]{40}$")
+# A linked plugin's marketplace folder holds only these files; everything else stays in the source repo.
+LINKED_FILES = {"plugin.json", "README.md"}
 
 # Plugins use the classic layout that VS Code, Copilot CLI and Claude Code all read:
 # root plugin.json (no Agent Plugins $schema), agents/, commands/, skills/, .mcp.json.
@@ -50,7 +54,14 @@ def write_if_changed(path: Path, content: str) -> bool:
     return True
 
 
+def is_linked(entry: dict) -> bool:
+    """A linked plugin lives in another GitHub repo; the marketplace keeps only plugin.json and README.md."""
+    return isinstance(entry.get("source"), dict)
+
+
 def plugin_dir(entry: dict) -> Path:
+    if is_linked(entry):
+        return ROOT / "plugins" / entry["name"]
     return (ROOT / entry["source"]).resolve()
 
 

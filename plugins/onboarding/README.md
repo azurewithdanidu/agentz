@@ -1,6 +1,10 @@
+---
+description: Set up marketplace contributors and source repository sync.
+---
+
 # onboarding
 
-Sets up a machine to contribute plugins to the agentz marketplace: installs agentz-publisher, HVE Core, Python with PyYAML and Vally for the evals.
+Sets up a machine to contribute plugins to the agentz marketplace, and sets up a plugin repo of your own to publish each new version to the marketplace through a pull request.
 
 | | |
 | --- | --- |
@@ -42,3 +46,11 @@ bash skills/setup-machine/scripts/setup.sh --dry-run
 The `contributor-conventions` skill holds the agentz authoring and eval rules (where files go, skill and agent rules, eval minimums), so they apply in every client rather than only where `.github/instructions/` is read. It starts when you create or change plugin content or ask what the gate requires.
 
 See [what each role installs](skills/setup-machine/references/what-it-installs.md).
+
+### Publish a plugin from your own repo
+
+If your plugin lives in its own repo and already uses the plugin layout (`plugin.json` or `.claude-plugin/plugin.json`, `skills/` and a `README.md`), run `/init` there. The `sync-marketplace` skill adds one file, `.github/workflows/agentz-sync.yml`, and doesn't change anything else in your repo.
+
+When you bump the plugin version on your default branch, the workflow copies `plugin.json` and `README.md` into `plugins/<name>/` in agentz. It pins the registry entry to your commit and opens a draft pull request. Clients install the plugin's skills, agents and commands straight from that commit. The marketplace gate checks them there, so the pull request has to pass the same rules as any other plugin.
+
+You need a single secret, `AGENTZ_MARKETPLACE_TOKEN`. In a private repo, the pull request makes `plugin.json` and `README.md` public. See [source repo setup](skills/sync-marketplace/references/setup.md) for the details and current limits.

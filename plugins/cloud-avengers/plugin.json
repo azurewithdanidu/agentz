@@ -1,0 +1,24 @@
+{
+  "name": "cloud-avengers",
+  "version": "1.4.0",
+  "description": "AI-assisted AWS to Azure migration factory. Provides 10 specialist agents and 22 skills that orchestrate the full migration pipeline: AWS discovery → Azure architecture design → IaC transformation → code refactor → CI/CD pipeline build → deployment → validation.",
+  "author": {
+    "name": "azurewithdanidu",
+    "email": "122934950+azurewithdanidu@users.noreply.github.com"
+  },
+  "homepage": "https://github.com/azurewithdanidu/ai-assisted-aws-to-azure-migration",
+  "repository": "https://github.com/azurewithdanidu/ai-assisted-aws-to-azure-migration",
+  "license": "MIT",
+  "keywords": [
+    "aws",
+    "azure",
+    "migration",
+    "cloud",
+    "bicep",
+    "cloudformation",
+    "agents",
+    "copilot",
+    "devops",
+    "infrastructure"
+  ]
+}

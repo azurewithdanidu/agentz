@@ -1,7 +1,7 @@
 {
   "name": "onboarding",
-  "version": "0.5.0",
-  "description": "Sets up a machine to contribute plugins to agentz: agentz-publisher, HVE Core, and the eval tooling",
+  "version": "0.6.0",
+  "description": "Sets up marketplace contributors, and publishes plugin repos to the marketplace through pull requests",
   "author": {
     "name": "Danidu Weerasinghe",
     "email": "danidu@dckloud.com"

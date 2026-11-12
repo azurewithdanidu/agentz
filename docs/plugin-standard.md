@@ -12,7 +12,7 @@ The easiest way to meet this standard is the `agentz-publisher` plugin, which wa
 
 | # | Requirement | Enforced by |
 | --- | --- | --- |
-| 1 | Folder at `plugins/<name>/`, registered in `.claude-plugin/marketplace.json` with `source: ./plugins/<name>` | CI |
+| 1 | Folder at `plugins/<name>/`, registered in `.claude-plugin/marketplace.json` with `source: ./plugins/<name>` (or a pinned linked source; see [Linked plugins](#linked-plugins)) | CI |
 | 2 | Name is lowercase-hyphenated, 64 characters or fewer, and the same in folder, manifest and marketplace entry | CI |
 | 3 | Root `plugin.json` with name, semver version, description, and author name and email. No `$schema` and no `extensions` (they switch Copilot to Agent Plugins rules) | CI |
 | 4 | Version bumped in `plugin.json` on every change (patch, minor or major) | CI (PRs) |
@@ -52,6 +52,23 @@ plugins/<name>/
 ```
 
 Run `python3 scripts/sync_manifests.py` after any change.
+
+### Linked plugins
+
+A plugin can stay in its own repo and still be listed here. Run `/init` from the `onboarding` plugin in that repo. It adds an `agentz-sync` workflow, and each version bump on the default branch opens a draft pull request that:
+
+- copies the source `plugin.json` and `README.md` into `plugins/<name>/`, which holds nothing else
+- sets the registry `source` to `{"source": "github", "repo": "owner/repo", "sha": "<commit>"}`, plus `path` if the plugin isn't at the repo root
+
+Clients install the skills, agents and commands from that commit. CI fetches the same commit and applies every content rule in the table above. When the commit changes, the version must be bumped. Fix any problem in the source repo and bump its version; the workflow updates the pull request.
+
+Current limits:
+
+- Public CI can't fetch a private source.
+- The duplicate check doesn't cover a linked plugin's skills.
+- VS Code and Cursor support for remote sources is not yet verified.
+
+See [source repo setup](../plugins/onboarding/skills/sync-marketplace/references/setup.md).
 
 ## How each client reads a plugin
 

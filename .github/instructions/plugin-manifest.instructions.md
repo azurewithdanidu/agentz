@@ -25,7 +25,8 @@ applyTo: "plugins/*/plugin.json,plugins/*/.mcp.json,.claude-plugin/marketplace.j
 ## Marketplace registration: `.claude-plugin/marketplace.json`
 
 - Every plugin folder has exactly one entry, and every entry has a folder.
-- `source` is `./plugins/<name>` (relative, starting with `./`).
+- `source` is `./plugins/<name>` (relative, starting with `./`), or for a linked plugin an object `{"source": "github", "repo": "owner/repo", "sha": "<40-character commit>"}` with an optional `path`. A linked entry must pin a full commit sha, never a branch or tag.
+- A linked plugin's folder holds only `plugin.json` and `README.md`, copied from the source repo by the `agentz-sync` workflow. CI fetches the pinned commit and checks its skills, agents, evals and MCP config. When `sha` changes, the version must be bumped. Ask for changes in the source repo, not in the copies.
 - `category` is one of `productivity`, `development`, `security`, `observability`.
 - `description` is present.
 - `version` is not set on the entry; it lives in the plugin's `plugin.json`.
