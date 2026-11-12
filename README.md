@@ -14,6 +14,7 @@ One repository, consumed by **VS Code (GitHub Copilot)**, **GitHub Copilot CLI**
 | [`bicep-writer`](plugins/bicep-writer/) | 0.1.1 | development | Azure with Danidu | `bicep-writer` | Writes new Azure Bicep templates composed from Azure Verified Modules (AVM), with pinned module versions, secure defaults and local compile checks. |
 | [`cloud-avengers`](plugins/cloud-avengers/) | 1.4.0 | development | azurewithdanidu | linked from [azurewithdanidu/cloud-avengers](https://github.com/azurewithdanidu/cloud-avengers) | AI-assisted AWS to Azure migration factory. Provides 10 specialist agents and 22 skills that orchestrate the full migration pipeline: AWS discovery → Azure architecture design → IaC transformation → code refactor → CI/CD pipeline build → deployment → validation. |
 | [`onboarding`](plugins/onboarding/) | 0.6.0 | productivity | Danidu Weerasinghe | `contributor-conventions`, `setup-machine`, `sync-marketplace` | Sets up marketplace contributors, and publishes plugin repos to the marketplace through pull requests |
+| [`songwriting`](plugins/songwriting/) | 0.2.1 | productivity | Azure with Danidu | `english-songwriting` | Writes and revises original English song lyrics, with structured verses, memorable choruses, natural rhyme and singability feedback. |
 <!-- plugins-table:end -->
 
 This table is generated from `catalog.json` by `scripts/build_catalog.py`.

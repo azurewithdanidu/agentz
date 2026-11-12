@@ -41,6 +41,12 @@
       },
       "description": "AI-assisted AWS to Azure migration factory. Provides 10 specialist agents and 22 skills that orchestrate the full migration pipeline: AWS discovery → Azure architecture design → IaC transformation → code refactor → CI/CD pipeline build → deployment → validation.",
       "category": "development"
+    },
+    {
+      "name": "songwriting",
+      "source": "plugins/songwriting",
+      "description": "Writes and revises original English song lyrics, with structured verses, memorable choruses, natural rhyme and singability feedback.",
+      "category": "productivity"
     }
   ]
 }

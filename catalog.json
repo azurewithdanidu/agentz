@@ -111,6 +111,26 @@
           "description": "Set up marketplace contribution tools, or set up a plugin repo to publish to the marketplace"
         }
       ]
+    },
+    {
+      "name": "songwriting",
+      "version": "0.2.1",
+      "description": "Writes and revises original English song lyrics, with structured verses, memorable choruses, natural rhyme and singability feedback.",
+      "category": "productivity",
+      "owner": "Azure with Danidu",
+      "skills": [
+        {
+          "name": "english-songwriting",
+          "description": "Write and revise original English song lyrics with titles, verses, choruses, bridges, natural rhyme and singability feedback. Use when asked to 'write an original English pop song about starting over', 'help me finish this English chorus', or 'improve the rhyme and singability of my English lyrics'. Do not use for business-email translation, programming, unrelated prose, non-English songwriting, audio generation or publishing music."
+        }
+      ],
+      "agents": [
+        {
+          "name": "songwriter",
+          "description": "Helps write and revise original English song lyrics. Use for song drafts, chorus ideas, lyric rewrites and singability feedback."
+        }
+      ],
+      "commands": []
     }
   ]
 }
