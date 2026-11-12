@@ -29,6 +29,16 @@
       "source": "./plugins/bicep-writer",
       "description": "Writes new Azure Bicep templates composed from Azure Verified Modules (AVM), with pinned module versions, secure defaults and local compile checks.",
       "category": "development"
+    },
+    {
+      "name": "cloud-avengers",
+      "source": {
+        "source": "github",
+        "repo": "azurewithdanidu/cloud-avengers",
+        "sha": "6217f1d9e20a8738f2eb242f70cdf2fe320b9374"
+      },
+      "description": "AI-assisted AWS to Azure migration factory. Provides 10 specialist agents and 22 skills that orchestrate the full migration pipeline: AWS discovery → Azure architecture design → IaC transformation → code refactor → CI/CD pipeline build → deployment → validation.",
+      "category": "development"
     }
   ],
   "renames": {
