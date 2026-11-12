@@ -12,9 +12,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import yaml
@@ -24,13 +26,17 @@ from marketplace_lib import (
     CATEGORIES,
     CLAUDE_MARKETPLACE,
     CODEOWNERS,
+    COMMIT_SHA_RE,
     COPILOT_NS,
+    GITHUB_REPO_RE,
+    LINKED_FILES,
     MCP_TYPES,
     NAME_RE,
     PLUGIN_FIELDS,
     ROOT,
     SEMVER_RE,
     Reporter,
+    is_linked,
     load_json,
     read_frontmatter,
     semver_tuple,
@@ -81,7 +87,9 @@ def check_marketplace(r: Reporter) -> dict:
         if name in seen:
             r.error(f"{where}: duplicate plugin name", CLAUDE_MARKETPLACE)
         seen.add(name)
-        if not isinstance(source, str) or not source.startswith("./plugins/") or ".." in source:
+        if is_linked(entry):
+            check_linked_source(r, where, source)
+        elif not isinstance(source, str) or not source.startswith("./plugins/") or ".." in source:
             r.error(f"{where}: source must be a relative path like ./plugins/{name}", CLAUDE_MARKETPLACE)
         elif source != f"./plugins/{name}":
             r.error(f"{where}: directory name must equal plugin name (./plugins/{name})", CLAUDE_MARKETPLACE)
@@ -134,11 +142,23 @@ def check_plugin(r: Reporter, entry: dict, codeowners: str) -> None:
     if "version" in entry:
         r.warn("set version in plugin.json only; the marketplace entry copy is ignored", CLAUDE_MARKETPLACE)
 
-    check_mcp(r, pdir)
-
-    # Required files and forbidden layout
     if not (pdir / "README.md").exists():
         r.error("README.md is required", pdir)
+
+    # Ownership
+    if f"/plugins/{name}/" not in codeowners:
+        r.error(f"no CODEOWNERS entry for /plugins/{name}/", CODEOWNERS)
+
+    if is_linked(entry):
+        check_linked(r, entry, pdir, manifest)
+    else:
+        check_content(r, pdir)
+
+
+def check_content(r, pdir: Path, scan_roots: list[Path] | None = None) -> None:
+    """Checks on a plugin's components: in the marketplace, or in a linked plugin's pinned source."""
+    check_mcp(r, pdir)
+
     if (pdir / "bin").is_dir():
         r.error("top-level bin/ is not allowed (Claude org sync rejects it). Use scripts/", pdir / "bin")
     if (pdir / COPILOT_NS).exists():
@@ -146,10 +166,6 @@ def check_plugin(r: Reporter, entry: dict, codeowners: str) -> None:
                 "so every client reads one copy", pdir / COPILOT_NS)
     if (pdir / ".plugin").exists():
         r.error("legacy OpenPlugin .plugin/ folder is not used here; plugin.json lives at the plugin root", pdir / ".plugin")
-
-    # Ownership
-    if f"/plugins/{name}/" not in codeowners:
-        r.error(f"no CODEOWNERS entry for /plugins/{name}/", CODEOWNERS)
 
     # Skills
     skill_dirs = sorted(p for p in (pdir / "skills").glob("*") if p.is_dir()) if (pdir / "skills").is_dir() else []
@@ -181,12 +197,112 @@ def check_plugin(r: Reporter, entry: dict, codeowners: str) -> None:
     check_evals(r, pdir)
 
     # Secrets
-    for f in pdir.rglob("*"):
+    files = (f for root in (scan_roots or [pdir]) for f in ([root] if root.is_file() else root.rglob("*")))
+    for f in files:
         if f.is_file() and f.suffix in {".md", ".json", ".yaml", ".yml", ".py", ".sh", ".ps1", ".bicep", ".bicepparam", ".txt"}:
             text = f.read_text(encoding="utf-8", errors="ignore")
             for label, pattern in SECRET_PATTERNS.items():
                 if pattern.search(text):
                     r.error(f"possible {label} committed", f)
+
+
+# ---------------------------------------------------------------- linked plugins
+
+# Plugin components fetched from a linked plugin's source repo (sparse checkout keeps the fetch small).
+LINKED_COMPONENTS = ("plugin.json", ".claude-plugin/", "skills/", "agents/", "commands/", "evals/",
+                     ".mcp.json", "bin/", f"{COPILOT_NS}/", ".plugin/")
+
+
+def check_linked_source(r: Reporter, where: str, source: dict) -> None:
+    if set(source) - {"source", "repo", "sha", "path"}:
+        r.error(f"{where}: linked source may only contain source, repo, sha and path", CLAUDE_MARKETPLACE)
+    if source.get("source") != "github":
+        r.error(f"{where}: linked source must be {{\"source\": \"github\", ...}}", CLAUDE_MARKETPLACE)
+    if not GITHUB_REPO_RE.match(str(source.get("repo", ""))):
+        r.error(f"{where}: linked source repo must be owner/repo", CLAUDE_MARKETPLACE)
+    if not COMMIT_SHA_RE.match(str(source.get("sha", ""))):
+        r.error(f"{where}: linked source must pin a full 40-character lowercase commit sha, so every "
+                "update goes through a reviewed PR", CLAUDE_MARKETPLACE)
+    path = source.get("path")
+    if path is not None and (not isinstance(path, str) or not path or path.startswith("/") or "\\" in path
+                             or any(p in ("", ".", "..") for p in path.rstrip("/").split("/"))):
+        r.error(f"{where}: linked source path must be a relative folder without '..'", CLAUDE_MARKETPLACE)
+
+
+class PrefixedReporter:
+    """Reports findings in a fetched source as <repo>@<sha>/<path> instead of a temp folder."""
+
+    def __init__(self, r: Reporter, root: Path, label: str) -> None:
+        self.r, self.root, self.label = r, root, label
+
+    def _map(self, file):
+        if file is None:
+            return self.label
+        try:
+            return f"{self.label}/{Path(file).relative_to(self.root).as_posix()}"
+        except ValueError:
+            return file
+
+    def error(self, msg: str, file=None) -> None:
+        self.r.error(msg, self._map(file))
+
+    def warn(self, msg: str, file=None) -> None:
+        self.r.warn(msg, self._map(file))
+
+
+def fetch_linked(source: dict, dest: Path) -> str | None:
+    """Sparse-fetch the plugin components at the pinned commit. Returns an error message or None."""
+    prefix = source.get("path", "").strip("/")
+    prefix = f"/{prefix}/" if prefix else "/"
+    url = f"https://github.com/{source['repo']}.git"
+    env = {**os.environ, "GIT_TERMINAL_PROMPT": "0"}
+    for cmd in (
+        ["git", "init", "-q", str(dest)],
+        ["git", "-C", str(dest), "sparse-checkout", "set", "--no-cone", *(prefix + c for c in LINKED_COMPONENTS)],
+        ["git", "-C", str(dest), "fetch", "-q", "--depth", "1", url, source["sha"]],
+        ["git", "-C", str(dest), "-c", "core.longpaths=true", "checkout", "-q", "FETCH_HEAD"],
+    ):
+        res = subprocess.run(cmd, capture_output=True, text=True, env=env)
+        if res.returncode:
+            return res.stderr.strip() or f"{cmd[1:4]} failed"
+    return None
+
+
+def check_linked(r: Reporter, entry: dict, pdir: Path, manifest: dict) -> None:
+    """A linked plugin keeps plugin.json and README.md here; its components are checked at the pinned commit."""
+    source = entry["source"]
+    for f in sorted(pdir.iterdir()):
+        if f.name not in LINKED_FILES:
+            r.error(f"linked plugins keep only {', '.join(sorted(LINKED_FILES))} in the marketplace; "
+                    f"'{f.name}' belongs in {source.get('repo')}", f)
+    if not (GITHUB_REPO_RE.match(str(source.get("repo", ""))) and COMMIT_SHA_RE.match(str(source.get("sha", "")))):
+        return  # already reported by check_marketplace
+
+    label = f"{source['repo']}@{source['sha'][:7]}"
+    with tempfile.TemporaryDirectory(prefix="agentz-linked-") as tmp:
+        error = fetch_linked(source, Path(tmp))
+        if error:
+            r.error(f"cannot fetch linked source {label}: {error}", pdir / "plugin.json")
+            return
+        cdir = Path(tmp) / source.get("path", "").strip("/")
+        remote_path = cdir / "plugin.json"
+        if not remote_path.is_file():
+            remote_path = cdir / ".claude-plugin" / "plugin.json"
+        try:
+            remote = load_json(remote_path)
+        except (OSError, json.JSONDecodeError) as exc:
+            r.error(f"linked source {label} has no valid plugin.json or .claude-plugin/plugin.json: {exc}",
+                    pdir / "plugin.json")
+            return
+        for field in ("name", "version"):
+            if remote.get(field) != manifest.get(field):
+                r.error(f"plugin.json {field} '{manifest.get(field)}' does not match the source at {label} "
+                        f"('{remote.get(field)}'); re-run the sync workflow", pdir / "plugin.json")
+        if AP_SCHEMA_HOST in str(remote.get("$schema", "")):
+            r.error("remove the Agent Plugins $schema from the source plugin.json: it switches Copilot to "
+                    "Agent Plugins rules", f"{label}/{remote_path.relative_to(tmp).as_posix()}")
+        scan = [cdir / c.rstrip("/") for c in LINKED_COMPONENTS if (cdir / c.rstrip("/")).exists()]
+        check_content(PrefixedReporter(r, Path(tmp), label), cdir, scan)
 
 
 def check_mcp(r: Reporter, pdir: Path) -> None:
@@ -320,12 +436,19 @@ def check_version_bumps(r: Reporter, base: str, market: dict) -> None:
         r.error(f"cannot diff against {base}: {diff.stderr.strip()}")
         return
     changed = diff.stdout.split()
+    try:
+        base_sources = {e.get("name"): e.get("source") for e in
+                        json.loads(base_file(base, ".claude-plugin/marketplace.json") or "{}").get("plugins", [])}
+    except json.JSONDecodeError:
+        base_sources = {}
     for entry in market.get("plugins", []):
         name = entry["name"]
         prefix = f"plugins/{name}/"
         generated_prefixes = tuple(f"{prefix}{g}" for g in
                                    (".claude-plugin/", ".cursor-plugin/", "mcp.json"))
-        if not any(f.startswith(prefix) and not f.startswith(generated_prefixes) for f in changed):
+        # A linked plugin changes when its pinned source changes, even if the copied files don't.
+        source_moved = name in base_sources and base_sources[name] != entry.get("source")
+        if not source_moved and not any(f.startswith(prefix) and not f.startswith(generated_prefixes) for f in changed):
             continue
         old_raw = base_file(base, f"{prefix}plugin.json") or base_file(base, f"{prefix}.claude-plugin/plugin.json")
         if old_raw is None:

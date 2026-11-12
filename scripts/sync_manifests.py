@@ -19,6 +19,9 @@ and at the repo root:
   .github/plugin/marketplace.json  Copilot CLI / VS Code marketplace (documented location)
   .cursor-plugin/marketplace.json  Cursor marketplace
 
+Linked plugins (registry source is a pinned GitHub object) keep only plugin.json and README.md
+here; clients install them from the source repo, so no per-plugin manifests are generated.
+
 Usage:
   python3 scripts/sync_manifests.py           # write files
   python3 scripts/sync_manifests.py --check   # fail if anything is out of date (CI)
@@ -35,6 +38,7 @@ from marketplace_lib import (
     CURSOR_MARKETPLACE,
     ROOT,
     dump_json,
+    is_linked,
     load_json,
     plugin_dir,
 )
@@ -43,8 +47,13 @@ MANIFEST_FIELDS = ["name", "version", "description", "author", "homepage", "repo
 CURSOR_ENTRY_FIELDS = ["name", "source", "description", "version", "category", "tags", "keywords"]
 
 
-def plugin_files(pdir: Path) -> dict[Path, str | None]:
+def plugin_files(pdir: Path, linked: bool = False) -> dict[Path, str | None]:
     files: dict[Path, str | None] = {}
+    if linked:
+        # Clients install a linked plugin from its source repo, so no client manifests live here.
+        for rel in (".claude-plugin/plugin.json", ".cursor-plugin/plugin.json", "mcp.json"):
+            files[pdir / rel] = None
+        return files
     manifest_path = pdir / "plugin.json"
     if not manifest_path.exists():
         return files
@@ -81,9 +90,10 @@ def expected_files() -> dict[Path, str | None]:
     }
     for entry in market["plugins"]:
         cursor_entry = {k: entry[k] for k in CURSOR_ENTRY_FIELDS if k in entry}
-        cursor_entry["source"] = entry["source"].removeprefix("./")
+        if not is_linked(entry):
+            cursor_entry["source"] = entry["source"].removeprefix("./")
         cursor_market["plugins"].append(cursor_entry)
-        files.update(plugin_files(plugin_dir(entry)))
+        files.update(plugin_files(plugin_dir(entry), is_linked(entry)))
     files[CURSOR_MARKETPLACE] = dump_json(cursor_market)
     return files
 
@@ -104,6 +114,8 @@ def main() -> int:
         elif content is None:
             path.unlink()
             print(f"removed  {rel}")
+            if path.parent != ROOT and not any(path.parent.iterdir()):
+                path.parent.rmdir()
         else:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(content, encoding="utf-8")

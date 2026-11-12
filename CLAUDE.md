@@ -19,7 +19,7 @@ Central agent-plugin marketplace by Azure with Danidu (`azurewithdanidu/agentz`)
 - Never add a `com.github.copilot/` folder or an Agent Plugins `$schema`: the `$schema` switches Copilot to rules that ignore the root `agents/` folder. CI fails on both.
 - Put logic in skills (the only component portable everywhere). Keep agents, commands and hooks thin.
 - No top-level `bin/` in a plugin (Claude org sync rejects it). Avoid hooks in shared plugins; the formats differ between clients.
-- Write `source` paths as `./plugins/<name>`; folder name = plugin name = manifest name.
+- Write `source` paths as `./plugins/<name>`; folder name = plugin name = manifest name. The exception is linked plugins, published from their own repo by the onboarding `agentz-sync` workflow. Their `source` is `{"source": "github", "repo", "sha"[, "path"]}` pinned to a commit, and `plugins/<name>/` holds only `plugin.json` and `README.md`. CI checks their components at the pinned commit.
 
 ## Layout
 
