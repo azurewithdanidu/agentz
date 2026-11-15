@@ -1,0 +1,17 @@
+{
+  "name": "songwriting",
+  "version": "0.2.1",
+  "description": "Writes and revises original English song lyrics, with structured verses, memorable choruses, natural rhyme and singability feedback.",
+  "author": {
+    "name": "Azure with Danidu",
+    "email": "danidu@dckloud.com"
+  },
+  "repository": "https://github.com/azurewithdanidu/agentz",
+  "license": "MIT",
+  "keywords": [
+    "songwriting",
+    "english",
+    "lyrics",
+    "creative-writing"
+  ]
+}

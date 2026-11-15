@@ -41,6 +41,12 @@
       },
       "description": "AI-assisted AWS to Azure migration factory focused on Python serverless workloads and CloudFormation. Provides 10 specialist agents and 22 skills for AWS discovery → Azure architecture design → IaC transformation → code refactor → CI/CD pipeline build → deployment → validation.",
       "category": "development"
+    },
+    {
+      "name": "songwriting",
+      "source": "plugins/songwriting",
+      "description": "Writes and revises original English song lyrics, with structured verses, memorable choruses, natural rhyme and singability feedback.",
+      "category": "productivity"
     }
   ]
 }
