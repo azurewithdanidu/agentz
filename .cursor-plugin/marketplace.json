@@ -41,6 +41,17 @@
       },
       "description": "AI-assisted AWS to Azure migration factory focused on Python serverless workloads and CloudFormation. Provides 10 specialist agents and 22 skills for AWS discovery → Azure architecture design → IaC transformation → code refactor → CI/CD pipeline build → deployment → validation.",
       "category": "development"
+    },
+    {
+      "name": "finops-squad",
+      "source": {
+        "source": "github",
+        "repo": "azurewithdanidu/azure-finops-squads",
+        "sha": "08eede6c9fe146efd3018206efa947c8bd86a1ac",
+        "path": "plugins/finops-squad"
+      },
+      "description": "Read-only Azure FinOps assessments, evidence-backed findings, static reports and approval-gated Bicep remediation with later savings verification.",
+      "category": "observability"
     }
   ]
 }
